@@ -1,0 +1,9 @@
+app:
+    aws:
+        s3:
+            bucket: bucket-name
+            region: region
+            access-key: access-key
+            secret: Secret
+            max-attempts: 2
+            timeout-millis: 500
