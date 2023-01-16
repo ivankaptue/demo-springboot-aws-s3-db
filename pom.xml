@@ -10,11 +10,10 @@
     </parent>
 
     <groupId>com.klid</groupId>
-    <artifactId>demo-springboot-aws-s3</artifactId>
+    <artifactId>demo-springboot-aws-s3-db</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
-    <name>demo-springboot-aws-s3</name>
-    <description>demo-springboot-aws-s3</description>
+    <name>demo-springboot-aws-s3-db</name>
 
     <properties>
         <java.version>17</java.version>
