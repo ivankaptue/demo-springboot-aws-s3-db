@@ -5,5 +5,6 @@ This service will take all the files of all stores every day and save sales in o
 
 ###### Make it run
 
+- `make start-db` to start postgresql in docker container and apply flyway migrations
 - `mvn clean install` to build
 - `mvn spring-boot:run` to run
