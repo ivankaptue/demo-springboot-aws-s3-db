@@ -1,4 +1,7 @@
 app:
+    retry:
+        maxAttempts: 2
+        backoffDelay: 100
     aws:
         s3:
             bucket: bucket-name

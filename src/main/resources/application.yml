@@ -1,4 +1,7 @@
 app:
+    retry:
+        maxAttempts: 2
+        backoffDelay: 300
     aws:
         s3:
             bucket: ${APP_AWS_S3_BUCKET}
@@ -7,3 +10,17 @@ app:
             secret: ${APP_AWS_S3_SECRET}
             max-attempts: ${APP_AWS_S3_MAX_ATTEMPTS}
             timeout-millis: ${APP_AWS_S3_TIMEOUT_MILLIS}
+management:
+    server:
+        port: 9990
+
+spring:
+    datasource:
+        url: ${APP_DATASOURCE_URL}
+        username: ${APP_DATASOURCE_USERNAME}
+        password: ${APP_DATASOURCE_PASSWORD}
+        driver-class-name: org.postgresql.Driver
+    jpa:
+        show-sql: false
+        hibernate:
+            ddl-auto: none
