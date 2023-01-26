@@ -27,7 +27,7 @@ public class StorePersistenceService {
         backoff = @Backoff(delayExpression = "#{${app.retry.backoffDelay}}"))
     public StoreEntity save(StoreEntity storeEntity) {
         log.info("Save store entity {}", storeEntity);
-        return storeRepository.save(storeEntity);
+        return storeRepository.saveAndFlush(storeEntity);
     }
 
     @SuppressWarnings("unused")

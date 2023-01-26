@@ -1,7 +1,7 @@
 package com.klid.s3db.service;
 
 import com.klid.s3db.exception.StorageServiceException;
-import com.klid.s3db.service.s3.S3StorageService;
+import com.klid.s3db.service.storage.s3.S3StorageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -68,10 +68,10 @@ class S3StorageServiceTest {
             given(s3Client.getObject(any(GetObjectRequest.class))).willThrow(NoSuchKeyException.class);
 
             assertGetFileContentException(
-                fileName,
-                NoSuchKeyException.class,
-                "Key does not exist",
-                HttpStatus.NOT_FOUND
+                    fileName,
+                    NoSuchKeyException.class,
+                    "Key does not exist",
+                    HttpStatus.NOT_FOUND
             );
         }
 
@@ -81,10 +81,10 @@ class S3StorageServiceTest {
             given(s3Client.getObject(any(GetObjectRequest.class))).willThrow(SdkClientException.class);
 
             assertGetFileContentException(
-                fileName,
-                SdkClientException.class,
-                "Client Error when calling S3 Service",
-                HttpStatus.BAD_REQUEST
+                    fileName,
+                    SdkClientException.class,
+                    "Client Error when calling S3 Service",
+                    HttpStatus.BAD_REQUEST
             );
         }
 
@@ -94,10 +94,10 @@ class S3StorageServiceTest {
             given(s3Client.getObject(any(GetObjectRequest.class))).willThrow(S3Exception.class);
 
             assertGetFileContentException(
-                fileName,
-                S3Exception.class,
-                "Server Error when calling S3 Service",
-                HttpStatus.SERVICE_UNAVAILABLE
+                    fileName,
+                    S3Exception.class,
+                    "Server Error when calling S3 Service",
+                    HttpStatus.SERVICE_UNAVAILABLE
             );
         }
     }
@@ -107,23 +107,23 @@ class S3StorageServiceTest {
     }
 
     private void assertGetFileContentException(
-        String key,
-        Class<? extends Exception> exceptionCauseClass,
-        String exceptionMessage,
-        HttpStatus exceptionHttpStatus) {
+            String key,
+            Class<? extends Exception> exceptionCauseClass,
+            String exceptionMessage,
+            HttpStatus exceptionHttpStatus) {
 
         assertThatThrownBy(() -> s3StorageService.getFileAsInputStream(key))
-            .isInstanceOf(StorageServiceException.class)
-            .hasMessage(exceptionMessage)
-            .hasCauseInstanceOf(exceptionCauseClass)
-            .extracting("httpStatus")
-            .isEqualTo(exceptionHttpStatus);
+                .isInstanceOf(StorageServiceException.class)
+                .hasMessage(exceptionMessage)
+                .hasCauseInstanceOf(exceptionCauseClass)
+                .extracting("httpStatus")
+                .isEqualTo(exceptionHttpStatus);
     }
 
     private GetObjectRequest getGetObjectRequest(String key) {
         return GetObjectRequest.builder()
-            .bucket(BUCKET_NAME)
-            .key(key)
-            .build();
+                .bucket(BUCKET_NAME)
+                .key(key)
+                .build();
     }
 }

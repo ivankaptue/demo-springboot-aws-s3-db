@@ -40,28 +40,28 @@ class StorePersistenceServiceTest {
 
         storePersistenceService.save(storeEntity);
 
-        then(storeRepository).should().save(storeEntity);
+        then(storeRepository).should().saveAndFlush(storeEntity);
     }
 
     @Test
     void shouldRetryToSaveEntityWhenExceptionOccur() {
         var storeEntity = createStoreEntity();
         var exception = new RuntimeException("Timeout");
-        given(storeRepository.save(storeEntity)).willThrow(exception);
+        given(storeRepository.saveAndFlush(storeEntity)).willThrow(exception);
 
         assertThatThrownBy(() -> storePersistenceService.save(storeEntity))
             .isInstanceOf(DatabaseException.class)
             .hasMessage("An error occur when saving StoreEntity")
             .hasCause(exception);
 
-        then(storeRepository).should(times(2)).save(storeEntity);
+        then(storeRepository).should(times(2)).saveAndFlush(storeEntity);
         then(dbRetryService).should(times(2)).shouldRetry(exception);
     }
 
     @Test
     void shouldNotRetryToSaveEntityWhenDataIntegrityViolationOccur() {
         var storeEntity = createStoreEntity();
-        given(storeRepository.save(storeEntity)).willThrow(new DuplicateKeyException("Duplicate key exception"));
+        given(storeRepository.saveAndFlush(storeEntity)).willThrow(new DuplicateKeyException("Duplicate key exception"));
 
         assertThatThrownBy(() -> storePersistenceService.save(storeEntity))
             .isInstanceOf(DatabaseException.class)
@@ -69,7 +69,7 @@ class StorePersistenceServiceTest {
             .hasCauseInstanceOf(DuplicateKeyException.class)
             .hasRootCauseMessage("Duplicate key exception");
 
-        then(storeRepository).should().save(storeEntity);
+        then(storeRepository).should().saveAndFlush(storeEntity);
     }
 
     StoreEntity createStoreEntity() {

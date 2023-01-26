@@ -8,6 +8,9 @@ CREATE TABLE s3_stores
 );
 
 ALTER TABLE s3_stores
+    ADD CONSTRAINT uc_s3_stores_id UNIQUE (id);
+
+ALTER TABLE s3_stores
     ADD CONSTRAINT uc_s3_stores_name UNIQUE (name);
 
 -- Sales
@@ -20,6 +23,9 @@ CREATE TABLE s3_sales
     store_id VARCHAR(255) NOT NULL,
     CONSTRAINT pk_s3_sales PRIMARY KEY (id)
 );
+
+ALTER TABLE s3_sales
+    ADD CONSTRAINT uc_s3_sales_id UNIQUE (id);
 
 ALTER TABLE s3_sales
     ADD CONSTRAINT FK_S3_SALES_ON_STORE FOREIGN KEY (store_id) REFERENCES s3_stores (id);
