@@ -1,6 +1,7 @@
-package com.klid.s3db.service.s3;
+package com.klid.s3db.service.storage.s3;
 
 import com.klid.s3db.exception.StorageServiceException;
+import com.klid.s3db.service.storage.StorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +19,7 @@ import java.io.InputStream;
  * @author Ivan Kaptue
  */
 @Service
-public class S3StorageService {
+public class S3StorageService implements StorageService {
 
     private static final Logger logger = LoggerFactory.getLogger(S3StorageService.class);
 
@@ -30,6 +31,7 @@ public class S3StorageService {
         this.bucket = bucket;
     }
 
+    @Override
     public InputStream getFileAsInputStream(String key) {
         logger.info("Get file content from S3 bucket");
 

@@ -14,14 +14,12 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
 @Table(name = "s3_sales")
 @Entity
 public class SaleEntity implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id")
+    @Column(name = "id", unique = true)
     private String id;
 
     @Column(name = "product", nullable = false)
@@ -48,5 +46,16 @@ public class SaleEntity implements Serializable {
     @Override
     public int hashCode() {
         return getId().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "SaleEntity{" +
+                "id='" + id + '\'' +
+                ", product='" + product + '\'' +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                ", storeEntity=" + storeEntity +
+                '}';
     }
 }
