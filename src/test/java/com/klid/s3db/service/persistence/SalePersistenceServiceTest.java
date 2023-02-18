@@ -1,5 +1,6 @@
 package com.klid.s3db.service.persistence;
 
+import com.klid.s3db.service.persistence.entity.SaleEntity;
 import com.klid.s3db.service.persistence.entity.StoreEntity;
 import com.klid.s3db.service.persistence.repository.SaleRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,10 +49,13 @@ class SalePersistenceServiceTest {
     @Test
     void shouldSaveSaleEntity() {
         var saleEntity = createSaleEntity();
+        given(saleRepository.save(any(SaleEntity.class))).willReturn(saleEntity);
 
-        salePersistenceService.save(saleEntity);
+        var savedEntity = salePersistenceService.save(saleEntity);
 
         then(saleRepository).should().save(saleEntity);
+        assertThat(savedEntity).isNotNull();
+        assertThat(savedEntity.getProduct()).isEqualTo("Milk");
     }
 
     @Test

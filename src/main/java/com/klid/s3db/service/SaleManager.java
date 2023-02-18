@@ -1,6 +1,6 @@
 package com.klid.s3db.service;
 
-import com.klid.s3db.exception.StoreEntityNotFound;
+import com.klid.s3db.exception.StoreEntityNotFoundException;
 import com.klid.s3db.model.dto.Sale;
 import com.klid.s3db.service.mapper.SaleMapper;
 import com.klid.s3db.service.persistence.SalePersistenceService;
@@ -35,6 +35,6 @@ public class SaleManager {
     @NonNull
     private StoreEntity findStoreEntity(UUID storeId) {
         return storePersistenceService.findById(storeId)
-            .orElseThrow(() -> new StoreEntityNotFound(storeId));
+            .orElseThrow(() -> new StoreEntityNotFoundException(storeId));
     }
 }
