@@ -2,7 +2,7 @@ package com.klid.s3db.service;
 
 import com.klid.s3db.data.SaleBuilder;
 import com.klid.s3db.exception.ArgumentValidationException;
-import com.klid.s3db.exception.StoreEntityNotFound;
+import com.klid.s3db.exception.StoreEntityNotFoundException;
 import com.klid.s3db.service.mapper.SaleMapper;
 import com.klid.s3db.service.persistence.SalePersistenceService;
 import com.klid.s3db.service.persistence.StorePersistenceService;
@@ -81,7 +81,7 @@ class SaleManagerTest {
         given(storePersistenceService.findById(any(UUID.class))).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> saleManager.getAll(1, 10, id))
-            .isInstanceOf(StoreEntityNotFound.class)
+            .isInstanceOf(StoreEntityNotFoundException.class)
             .hasMessage("Store entity not found")
             .extracting("id")
             .isEqualTo(UUID.fromString(id));

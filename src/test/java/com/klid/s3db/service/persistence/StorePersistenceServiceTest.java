@@ -1,5 +1,6 @@
 package com.klid.s3db.service.persistence;
 
+import com.klid.s3db.service.persistence.entity.StoreEntity;
 import com.klid.s3db.service.persistence.repository.StoreRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,10 +50,13 @@ class StorePersistenceServiceTest {
     @Test
     void shouldSaveStoreEntity() {
         var storeEntity = createStoreEntity();
+        given(storeRepository.saveAndFlush(any(StoreEntity.class))).willReturn(storeEntity);
 
-        storePersistenceService.save(storeEntity);
+        var savedEntity = storePersistenceService.save(storeEntity);
 
         then(storeRepository).should().saveAndFlush(storeEntity);
+        assertThat(savedEntity).isNotNull();
+        assertThat(savedEntity.getName()).isEqualTo("MAXI");
     }
 
     @Test

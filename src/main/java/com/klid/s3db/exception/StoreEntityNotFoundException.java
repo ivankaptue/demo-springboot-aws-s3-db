@@ -5,11 +5,11 @@ import lombok.Getter;
 import java.util.UUID;
 
 @Getter
-public class StoreEntityNotFound extends RuntimeException {
+public class StoreEntityNotFoundException extends RuntimeException {
 
     private final UUID id;
 
-    public StoreEntityNotFound(UUID id) {
+    public StoreEntityNotFoundException(UUID id) {
         super("Store entity not found");
         this.id = id;
     }
