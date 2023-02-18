@@ -18,4 +18,4 @@ jobs:
                     cache: maven
 
             -   name: Build and Test
-                run: mvn -B clean install
+                run: mvn -B clean install org.pitest:pitest-maven:mutationCoverage -Dthreads=2
