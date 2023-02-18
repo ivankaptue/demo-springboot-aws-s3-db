@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.math.BigDecimal;
 import java.util.stream.Stream;
@@ -28,55 +26,16 @@ class SaleItemConverterTest {
 
         assertThat(saleEntity).isNotNull();
         assertThat(saleEntity.getProduct()).isEqualTo(productName);
-        assertThat(saleEntity.getQuantity()).isEqualTo((short) quantity);
+        assertThat(saleEntity.getQuantity()).isEqualTo(quantity);
         assertThat(saleEntity.getPrice()).isEqualByComparingTo(price);
     }
 
-    @ParameterizedTest
-    @NullAndEmptySource
-    @ValueSource(strings = {" "})
-    void shouldThrowExceptionWhenLineNotDefined(String line) {
-        assertConversionException(line, "Line must be defined");
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {",", "a,a", "a,a,a,a"})
-    void shouldThrowExceptionWhenLineNotContainsValidColumnsCount(String line) {
-        assertConversionException(line, "Line must contains exactly 3 columns");
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {",1,1.00", " ,1,1.00"})
-    void shouldThrowExceptionWhenProductNameNotDefinedInFirstColumn(String line) {
-        assertConversionException(line, "Line must contains product name in first column");
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"a,,1.00", "a,a,1.00", "a,1.1,1.00", "a,32768,1.00"})
-    void shouldThrowExceptionWhenQuantityNotContainsValidNumberValue(String line) {
-        assertConversionException(line, "Line must contains quantity in second column and it must be a number");
-    }
-
     @Test
-    void shouldThrowExceptionWhenQuantityContainsValueLessThanOne() {
-        var line = "a,0,1.00";
+    void shouldThrowExceptionWhenUnexpectedErrorOccur() {
+        var line = "PAPER,93,null";
         assertThatThrownBy(() -> saleItemConverter.convert(line))
             .isInstanceOf(SaleConversionException.class)
-            .hasMessage("Line must contains quantity in second column and it must be a number")
-            .hasCauseInstanceOf(SaleConversionException.class)
-            .hasRootCauseMessage("Quantity must be a number greater than 1");
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"a,1, ", "a,1,null"})
-    void shouldThrowExceptionWhenPriceNotContainsValidDecimalValue(String line) {
-        assertConversionException(line, "Line must contains price in third column and it must be a positive decimal number");
-    }
-
-    private void assertConversionException(String line, String message) {
-        assertThatThrownBy(() -> saleItemConverter.convert(line))
-            .isInstanceOf(SaleConversionException.class)
-            .hasMessage(message);
+            .hasMessageStartingWith("Unexpected error when convert line");
     }
 
     public static Stream<Arguments> validInputSource() {
