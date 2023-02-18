@@ -1,20 +1,25 @@
 package com.klid.s3db.service.persistence;
 
-import com.klid.s3db.service.persistence.entity.SaleEntity;
 import com.klid.s3db.service.persistence.entity.StoreEntity;
 import com.klid.s3db.service.persistence.repository.SaleRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.retry.annotation.EnableRetry;
 
-import java.math.BigDecimal;
-import java.util.UUID;
-
+import static com.klid.s3db.data.SaleBuilder.createSaleEntities;
+import static com.klid.s3db.data.SaleBuilder.createSaleEntity;
+import static com.klid.s3db.data.StoreBuilder.createStoreEntity;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -34,6 +39,11 @@ class SalePersistenceServiceTest {
 
     @Autowired
     private SalePersistenceService salePersistenceService;
+
+    @BeforeEach
+    void setup() {
+        reset(saleRepository);
+    }
 
     @Test
     void shouldSaveSaleEntity() {
@@ -73,14 +83,48 @@ class SalePersistenceServiceTest {
         then(saleRepository).should().save(saleEntity);
     }
 
-    SaleEntity createSaleEntity() {
-        return SaleEntity.builder()
-            .id(UUID.randomUUID().toString())
-            .storeEntity(new StoreEntity())
-            .product("Milk")
-            .price(new BigDecimal("10.00"))
-            .quantity((short) 3)
-            .build();
+    @Test
+    void shouldReturnsSalesPagingWhenFindAll() {
+        var storeEntity = createStoreEntity();
+        var sales = createSaleEntities(7);
+        var pagedSale = new PageImpl<>(sales, PageRequest.of(0, 10), 17);
+        given(saleRepository.findAllByStoreEntity(any(StoreEntity.class), any(Pageable.class))).willReturn(pagedSale);
+
+        var expectedResult = salePersistenceService.findAll(0, 10, storeEntity);
+
+        then(saleRepository).should().findAllByStoreEntity(eq(storeEntity), any(Pageable.class));
+        assertThat(expectedResult.getContent()).hasSize(7);
+        assertThat(expectedResult.getTotalPages()).isEqualTo(2);
+        assertThat(expectedResult.getTotalElements()).isEqualTo(17);
+    }
+
+    @Test
+    void shouldRetryToFindAllSalesWhenExceptionOccur() {
+        var storeEntity = createStoreEntity();
+        var exception = new RuntimeException("Timeout");
+        given(saleRepository.findAllByStoreEntity(any(StoreEntity.class), any(Pageable.class))).willThrow(exception);
+
+        assertThatThrownBy(() -> salePersistenceService.findAll(0, 10, storeEntity))
+            .isInstanceOf(DatabaseException.class)
+            .hasMessage("An error occur when find all sales")
+            .hasCause(exception);
+
+        then(saleRepository).should(times(2)).findAllByStoreEntity(eq(storeEntity), any(Pageable.class));
+    }
+
+    @Test
+    void shouldNotRetryToFindAllWhenDataIntegrityViolationOccur() {
+        var storeEntity = createStoreEntity();
+        var exception = new DataIntegrityViolationException("DataIntegrityViolationException");
+        given(saleRepository.findAllByStoreEntity(any(StoreEntity.class), any(Pageable.class))).willThrow(exception);
+
+        assertThatThrownBy(() -> salePersistenceService.findAll(0, 10, storeEntity))
+            .isInstanceOf(DatabaseException.class)
+            .hasMessage("An error occur when find all sales")
+            .hasCauseInstanceOf(DataIntegrityViolationException.class)
+            .hasRootCauseMessage("DataIntegrityViolationException");
+
+        then(saleRepository).should().findAllByStoreEntity(eq(storeEntity), any(Pageable.class));
     }
 
     @Configuration

@@ -7,8 +7,9 @@ import com.klid.s3db.service.persistence.SalePersistenceService;
 import com.klid.s3db.service.persistence.StorePersistenceService;
 import com.klid.s3db.service.persistence.entity.StoreEntity;
 import com.klid.s3db.service.storage.StorageService;
+import com.klid.s3db.service.validator.LineEntryValidator;
 import com.klid.s3db.utils.ReaderProvider;
-import com.klid.s3db.utils.UUIDProvider;
+import com.klid.s3db.utils.UUIDGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,13 +27,14 @@ import java.io.IOException;
 public class LaunchProcessCommand {
 
     private final StorageService storageService;
+    private final LineEntryValidator lineEntryValidator;
     private final SaleItemConverter saleItemConverter;
     private final StorePersistenceService storePersistenceService;
     private final SalePersistenceService salePersistenceService;
-    private final UUIDProvider uuidProvider;
+    private final UUIDGenerator uuidGenerator;
     private final ReaderProvider readerProvider;
 
-    public void execute(String filename) {
+    public long execute(String filename) {
         log.info("Start processing file {}", filename);
 
         var contentInputStream = storageService.getFileAsInputStream(filename);
@@ -41,6 +43,8 @@ public class LaunchProcessCommand {
             var count = processData(storeEntity, bufferedReader);
 
             log.info("End processing file {}. {} items processed", filename, count);
+
+            return count;
         } catch (IOException ex) {
             var message = String.format("An error occur on processing file %s", filename);
             throw new S3DBException(message, ex);
@@ -49,22 +53,23 @@ public class LaunchProcessCommand {
 
     private StoreEntity createStoreEntity(String filename) {
         var storeEntity = StoreEntity.builder()
-                .id(uuidProvider.uuid())
-                .name(filename)
-                .status(StatusEnum.PENDING)
-                .build();
+            .id(uuidGenerator.uuid())
+            .name(filename)
+            .status(StatusEnum.PENDING)
+            .build();
 
         return storePersistenceService.save(storeEntity);
     }
 
     private long processData(StoreEntity storeEntity, BufferedReader bufferedReader) {
         return bufferedReader.lines()
-                .skip(1)
-                .filter(StringUtils::hasText)
-                .map(saleItemConverter::convert)
-                .peek(item -> item.setId(uuidProvider.uuid()))
-                .peek(item -> item.setStoreEntity(storeEntity))
-                .map(salePersistenceService::save)
-                .count();
+            .skip(1)
+            .filter(StringUtils::hasText)
+            .peek(lineEntryValidator::validate)
+            .map(saleItemConverter::convert)
+            .peek(item -> item.setId(uuidGenerator.uuid()))
+            .peek(item -> item.setStoreEntity(storeEntity))
+            .map(salePersistenceService::save)
+            .count();
     }
 }

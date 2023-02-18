@@ -26,12 +26,12 @@ public class SaleEntity implements Serializable {
     private String product;
 
     @Column(name = "quantity", nullable = false)
-    private short quantity;
+    private int quantity;
 
     @Column(name = "price", nullable = false)
     private BigDecimal price;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
     private StoreEntity storeEntity;
 
@@ -51,11 +51,11 @@ public class SaleEntity implements Serializable {
     @Override
     public String toString() {
         return "SaleEntity{" +
-                "id='" + id + '\'' +
-                ", product='" + product + '\'' +
-                ", quantity=" + quantity +
-                ", price=" + price +
-                ", storeEntity=" + storeEntity +
-                '}';
+            "id='" + id + '\'' +
+            ", product='" + product + '\'' +
+            ", quantity=" + quantity +
+            ", price=" + price +
+            ", storeEntity=" + storeEntity +
+            '}';
     }
 }

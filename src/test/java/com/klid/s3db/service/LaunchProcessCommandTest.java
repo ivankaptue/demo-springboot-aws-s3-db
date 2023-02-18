@@ -8,8 +8,9 @@ import com.klid.s3db.service.persistence.StorePersistenceService;
 import com.klid.s3db.service.persistence.entity.SaleEntity;
 import com.klid.s3db.service.persistence.entity.StoreEntity;
 import com.klid.s3db.service.storage.StorageService;
+import com.klid.s3db.service.validator.LineEntryValidator;
 import com.klid.s3db.utils.ReaderProvider;
-import com.klid.s3db.utils.UUIDProvider;
+import com.klid.s3db.utils.UUIDGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -39,13 +40,15 @@ class LaunchProcessCommandTest {
     @Mock
     private StorageService storageService;
     @Mock
+    private LineEntryValidator lineEntryValidator;
+    @Mock
     private SaleItemConverter saleItemConverter;
     @Mock
     private StorePersistenceService storePersistenceService;
     @Mock
     private SalePersistenceService salePersistenceService;
     @Mock
-    private UUIDProvider uuidProvider;
+    private UUIDGenerator uuidGenerator;
     @Mock
     private ReaderProvider readerProvider;
     @InjectMocks
@@ -55,28 +58,31 @@ class LaunchProcessCommandTest {
     void shouldSalesFromFileToDB() {
         // given
         given(storageService.getFileAsInputStream(FILE_NAME)).willReturn(getInputStream());
-        given(uuidProvider.uuid()).willReturn(UUID);
+        given(uuidGenerator.uuid()).willReturn(UUID);
         given(readerProvider.provideReader(any())).willCallRealMethod();
+        willCallRealMethod().given(lineEntryValidator).validate(anyString());
         given(saleItemConverter.convert(any(String.class))).willCallRealMethod();
         given(storePersistenceService.save(any(StoreEntity.class))).will(extractPassedArgument());
         given(salePersistenceService.save(any(SaleEntity.class))).will(extractPassedArgument());
 
         // when
-        launchProcessCommand.execute(FILE_NAME);
+        var processedItemsCount = launchProcessCommand.execute(FILE_NAME);
 
         // then
         var storeCaptor = ArgumentCaptor.forClass(StoreEntity.class);
         var saleCaptor = ArgumentCaptor.forClass(SaleEntity.class);
         var expectedStoreEntity = buildStoreEntity();
 
+        assertThat(processedItemsCount).isEqualTo(5);
         then(storageService).should().getFileAsInputStream(FILE_NAME);
         then(storePersistenceService).should().save(storeCaptor.capture());
         assertThat(storeCaptor.getValue()).usingRecursiveComparison().isEqualTo(expectedStoreEntity);
+        then(lineEntryValidator).should(times(5)).validate(anyString());
         then(saleItemConverter).should(times(5)).convert(anyString());
         then(salePersistenceService).should(times(5)).save(saleCaptor.capture());
         assertThat(saleCaptor.getAllValues())
-                .allMatch(sale ->
-                        UUID.equals(sale.getId()) && Objects.equals(sale.getStoreEntity(), expectedStoreEntity));
+            .allMatch(sale ->
+                UUID.equals(sale.getId()) && Objects.equals(sale.getStoreEntity(), expectedStoreEntity));
     }
 
     @Test
@@ -86,21 +92,22 @@ class LaunchProcessCommandTest {
         });
 
         assertThatThrownBy(() -> launchProcessCommand.execute(FILE_NAME))
-                .isInstanceOf(S3DBException.class)
-                .hasMessage(String.format("An error occur on processing file %s", FILE_NAME));
+            .isInstanceOf(S3DBException.class)
+            .hasMessage(String.format("An error occur on processing file %s", FILE_NAME));
 
         then(storePersistenceService).shouldHaveNoInteractions();
         then(salePersistenceService).shouldHaveNoInteractions();
-        then(uuidProvider).shouldHaveNoInteractions();
+        then(uuidGenerator).shouldHaveNoInteractions();
+        then(lineEntryValidator).shouldHaveNoInteractions();
         then(saleItemConverter).shouldHaveNoInteractions();
     }
 
     private StoreEntity buildStoreEntity() {
         return StoreEntity.builder()
-                .id(UUID)
-                .name(FILE_NAME)
-                .status(StatusEnum.PENDING)
-                .build();
+            .id(UUID)
+            .name(FILE_NAME)
+            .status(StatusEnum.PENDING)
+            .build();
     }
 
     private InputStream getInputStream() {
