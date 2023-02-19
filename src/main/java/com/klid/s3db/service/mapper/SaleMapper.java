@@ -11,11 +11,11 @@ import java.util.List;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface SaleMapper {
 
-    Sale mapFromSaleEntity(SaleEntity saleEntity);
+  Sale mapFromSaleEntity(SaleEntity saleEntity);
 
-    default List<Sale> mapFromSaleEntities(List<SaleEntity> saleEntities) {
-        return saleEntities.stream()
-            .map(this::mapFromSaleEntity)
-            .toList();
-    }
+  default List<Sale> mapFromSaleEntities(List<SaleEntity> saleEntities) {
+    return saleEntities.stream()
+      .map(this::mapFromSaleEntity)
+      .toList();
+  }
 }

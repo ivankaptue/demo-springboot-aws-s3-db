@@ -20,39 +20,39 @@ import java.util.Set;
 @Entity
 public class StoreEntity implements Serializable {
 
-    @Id
-    @Column(name = "id", unique = true)
-    private String id;
+  @Id
+  @Column(name = "id", unique = true)
+  private String id;
 
-    @Column(name = "name", unique = true, nullable = false)
-    private String name;
+  @Column(name = "name", unique = true, nullable = false)
+  private String name;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private StatusEnum status;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", nullable = false)
+  private StatusEnum status;
 
-    @OneToMany(mappedBy = "storeEntity")
-    private Set<SaleEntity> saleEntities;
+  @OneToMany(mappedBy = "storeEntity")
+  private Set<SaleEntity> saleEntities;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof StoreEntity storeEntity)) return false;
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof StoreEntity storeEntity)) return false;
 
-        return Objects.equals(getId(), storeEntity.getId());
-    }
+    return Objects.equals(getId(), storeEntity.getId());
+  }
 
-    @Override
-    public int hashCode() {
-        return getId().hashCode();
-    }
+  @Override
+  public int hashCode() {
+    return getId().hashCode();
+  }
 
-    @Override
-    public String toString() {
-        return "StoreEntity{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", status=" + status +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "StoreEntity{" +
+      "id='" + id + '\'' +
+      ", name='" + name + '\'' +
+      ", status=" + status +
+      '}';
+  }
 }

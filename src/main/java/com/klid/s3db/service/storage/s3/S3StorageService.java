@@ -21,36 +21,36 @@ import java.io.InputStream;
 @Service
 public class S3StorageService implements StorageService {
 
-    private static final Logger logger = LoggerFactory.getLogger(S3StorageService.class);
+  private static final Logger logger = LoggerFactory.getLogger(S3StorageService.class);
 
-    private final S3Client s3Client;
-    private final String bucket;
+  private final S3Client s3Client;
+  private final String bucket;
 
-    public S3StorageService(S3Client s3Client, @Value("${app.aws.s3.bucket}") String bucket) {
-        this.s3Client = s3Client;
-        this.bucket = bucket;
+  public S3StorageService(S3Client s3Client, @Value("${app.aws.s3.bucket}") String bucket) {
+    this.s3Client = s3Client;
+    this.bucket = bucket;
+  }
+
+  @Override
+  public InputStream getFileAsInputStream(String key) {
+    logger.info("Get file content from S3 bucket");
+
+    try {
+      var objectRequest = GetObjectRequest.builder()
+        .bucket(bucket)
+        .key(key)
+        .build();
+      var objectResponse = s3Client.getObject(objectRequest);
+
+      logger.info("File content found and returned from S3 bucket");
+
+      return objectResponse;
+    } catch (NoSuchKeyException ex) {
+      throw new StorageServiceException("Key does not exist", ex, HttpStatus.NOT_FOUND);
+    } catch (SdkClientException ex) {
+      throw new StorageServiceException("Client Error when calling S3 Service", ex, HttpStatus.BAD_REQUEST);
+    } catch (S3Exception ex) {
+      throw new StorageServiceException("Server Error when calling S3 Service", ex, HttpStatus.SERVICE_UNAVAILABLE);
     }
-
-    @Override
-    public InputStream getFileAsInputStream(String key) {
-        logger.info("Get file content from S3 bucket");
-
-        try {
-            var objectRequest = GetObjectRequest.builder()
-                .bucket(bucket)
-                .key(key)
-                .build();
-            var objectResponse = s3Client.getObject(objectRequest);
-
-            logger.info("File content found and returned from S3 bucket");
-
-            return objectResponse;
-        } catch (NoSuchKeyException ex) {
-            throw new StorageServiceException("Key does not exist", ex, HttpStatus.NOT_FOUND);
-        } catch (SdkClientException ex) {
-            throw new StorageServiceException("Client Error when calling S3 Service", ex, HttpStatus.BAD_REQUEST);
-        } catch (S3Exception ex) {
-            throw new StorageServiceException("Server Error when calling S3 Service", ex, HttpStatus.SERVICE_UNAVAILABLE);
-        }
-    }
+  }
 }

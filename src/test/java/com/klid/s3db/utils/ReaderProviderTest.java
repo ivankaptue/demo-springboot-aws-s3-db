@@ -13,13 +13,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ReaderProviderTest {
 
-    private final ReaderProvider readerProvider = new ReaderProvider();
+  private final ReaderProvider readerProvider = new ReaderProvider();
 
-    @Test
-    void shouldReturnBufferedReaderInstanceFromInputStream() {
-        var reader = readerProvider.provideReader(new ByteArrayInputStream("Hello world.".getBytes(StandardCharsets.UTF_8)));
+  @Test
+  void shouldReturnBufferedReaderInstanceFromInputStream() {
+    var reader = readerProvider.provideReader(new ByteArrayInputStream("Hello world.".getBytes(StandardCharsets.UTF_8)));
 
-        assertThat(reader).isNotNull();
-        assertThat(reader.lines().collect(Collectors.joining())).isEqualTo("Hello world.");
-    }
+    assertThat(reader).isNotNull();
+    assertThat(reader.lines().collect(Collectors.joining())).isEqualTo("Hello world.");
+  }
 }

@@ -22,22 +22,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(LauncherApiController.class)
 class LauncherApiControllerTest {
 
-    @MockBean
-    private LaunchProcessCommand launchProcessCommand;
+  @MockBean
+  private LaunchProcessCommand launchProcessCommand;
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired
+  private MockMvc mockMvc;
 
-    @Test
-    void shouldReturnsCountOfSalesProcessed() throws Exception {
-        given(launchProcessCommand.execute(anyString())).willReturn(5L);
+  @Test
+  void shouldReturnsCountOfSalesProcessed() throws Exception {
+    given(launchProcessCommand.execute(anyString())).willReturn(5L);
 
-        mockMvc.perform(
-                post("/download")
-                    .queryParam("filename", "MAXI_20230129.csv")
-                    .accept(MediaType.APPLICATION_JSON_VALUE))
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.sales", equalTo(5)));
-    }
+    mockMvc.perform(
+        post("/download")
+          .queryParam("filename", "MAXI_20230129.csv")
+          .accept(MediaType.APPLICATION_JSON_VALUE))
+      .andDo(print())
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.sales", equalTo(5)));
+  }
 }

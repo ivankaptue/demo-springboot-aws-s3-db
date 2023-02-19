@@ -13,40 +13,40 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class StoreMapperTest {
 
-    private final StoreMapper storeMapper = new StoreMapperImpl();
+  private final StoreMapper storeMapper = new StoreMapperImpl();
 
-    @Test
-    void shouldConvertStoreEntityToStoreDTO() {
-        var storeEntity = createStoreEntity();
+  @Test
+  void shouldConvertStoreEntityToStoreDTO() {
+    var storeEntity = createStoreEntity();
 
-        var storeDTO = storeMapper.mapFromStoreEntity(storeEntity);
+    var storeDTO = storeMapper.mapFromStoreEntity(storeEntity);
 
-        assertThat(storeDTO.id()).isEqualTo("08b06522-8899-4a94-afe2-243a59b29237");
-        assertThat(storeDTO.name()).isEqualTo("Maxi");
-        assertThat(storeDTO.status()).isEqualTo(StatusEnum.PENDING);
-    }
+    assertThat(storeDTO.id()).isEqualTo("08b06522-8899-4a94-afe2-243a59b29237");
+    assertThat(storeDTO.name()).isEqualTo("Maxi");
+    assertThat(storeDTO.status()).isEqualTo(StatusEnum.PENDING);
+  }
 
-    @Test
-    void shouldConvertStoreEntityListToStoreDTOList() {
-        var storeEntities = List.of(createStoreEntity(), createStoreEntity());
+  @Test
+  void shouldConvertStoreEntityListToStoreDTOList() {
+    var storeEntities = List.of(createStoreEntity(), createStoreEntity());
 
-        var storeDTOList = storeMapper.mapFromStoreEntities(storeEntities);
+    var storeDTOList = storeMapper.mapFromStoreEntities(storeEntities);
 
-        assertThat(storeDTOList).hasSize(2);
-    }
+    assertThat(storeDTOList).hasSize(2);
+  }
 
-    @Test
-    void shouldReturnNullWhenNullEntry() {
-        var result = storeMapper.mapFromStoreEntity(null);
+  @Test
+  void shouldReturnNullWhenNullEntry() {
+    var result = storeMapper.mapFromStoreEntity(null);
 
-        assertThat(result).isNull();
-    }
+    assertThat(result).isNull();
+  }
 
-    private StoreEntity createStoreEntity() {
-        return StoreEntity.builder()
-            .id("08b06522-8899-4a94-afe2-243a59b29237")
-            .name("Maxi")
-            .status(StatusEnum.PENDING)
-            .build();
-    }
+  private StoreEntity createStoreEntity() {
+    return StoreEntity.builder()
+      .id("08b06522-8899-4a94-afe2-243a59b29237")
+      .name("Maxi")
+      .status(StatusEnum.PENDING)
+      .build();
+  }
 }

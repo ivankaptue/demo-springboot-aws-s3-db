@@ -19,22 +19,22 @@ import java.util.UUID;
 @Service
 public class SaleManager {
 
-    private final ArgumentValidator argumentValidator;
-    private final SaleMapper saleMapper;
-    private final SalePersistenceService salePersistenceService;
-    private final StorePersistenceService storePersistenceService;
+  private final ArgumentValidator argumentValidator;
+  private final SaleMapper saleMapper;
+  private final SalePersistenceService salePersistenceService;
+  private final StorePersistenceService storePersistenceService;
 
-    public Page<Sale> getAll(int page, int size, String storeId) {
-        argumentValidator.validate(page, size, storeId);
-        var storeEntity = findStoreEntity(UUID.fromString(storeId));
-        var pagedStore = salePersistenceService.findAll(page - 1, size, storeEntity);
-        var stores = saleMapper.mapFromSaleEntities(pagedStore.getContent());
-        return new PageImpl<>(stores, pagedStore.getPageable(), pagedStore.getTotalElements());
-    }
+  public Page<Sale> getAll(int page, int size, String storeId) {
+    argumentValidator.validate(page, size, storeId);
+    var storeEntity = findStoreEntity(UUID.fromString(storeId));
+    var pagedStore = salePersistenceService.findAll(page - 1, size, storeEntity);
+    var stores = saleMapper.mapFromSaleEntities(pagedStore.getContent());
+    return new PageImpl<>(stores, pagedStore.getPageable(), pagedStore.getTotalElements());
+  }
 
-    @NonNull
-    private StoreEntity findStoreEntity(UUID storeId) {
-        return storePersistenceService.findById(storeId)
-            .orElseThrow(() -> new StoreEntityNotFoundException(storeId));
-    }
+  @NonNull
+  private StoreEntity findStoreEntity(UUID storeId) {
+    return storePersistenceService.findById(storeId)
+      .orElseThrow(() -> new StoreEntityNotFoundException(storeId));
+  }
 }

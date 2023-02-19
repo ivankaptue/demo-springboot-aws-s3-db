@@ -7,5 +7,5 @@ import java.io.InputStream;
  */
 public interface StorageService {
 
-    InputStream getFileAsInputStream(String key);
+  InputStream getFileAsInputStream(String key);
 }

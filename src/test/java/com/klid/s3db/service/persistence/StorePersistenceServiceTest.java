@@ -33,154 +33,154 @@ import static org.mockito.Mockito.*;
 @SpringBootTest(classes = StorePersistenceServiceTest.StorePersistenceTestConfig.class)
 class StorePersistenceServiceTest {
 
-    @Autowired
-    private StoreRepository storeRepository;
+  @Autowired
+  private StoreRepository storeRepository;
 
-    @Autowired
-    private DBRetryService dbRetryService;
+  @Autowired
+  private DBRetryService dbRetryService;
 
-    @Autowired
-    private StorePersistenceService storePersistenceService;
+  @Autowired
+  private StorePersistenceService storePersistenceService;
 
-    @BeforeEach
-    void setup() {
-        reset(storeRepository);
+  @BeforeEach
+  void setup() {
+    reset(storeRepository);
+  }
+
+  @Test
+  void shouldSaveStoreEntity() {
+    var storeEntity = createStoreEntity();
+    given(storeRepository.saveAndFlush(any(StoreEntity.class))).willReturn(storeEntity);
+
+    var savedEntity = storePersistenceService.save(storeEntity);
+
+    then(storeRepository).should().saveAndFlush(storeEntity);
+    assertThat(savedEntity).isNotNull();
+    assertThat(savedEntity.getName()).isEqualTo("MAXI");
+  }
+
+  @Test
+  void shouldRetryToSaveEntityWhenExceptionOccur() {
+    var storeEntity = createStoreEntity();
+    var exception = new RuntimeException("Timeout");
+    given(storeRepository.saveAndFlush(storeEntity)).willThrow(exception);
+
+    assertThatThrownBy(() -> storePersistenceService.save(storeEntity))
+      .isInstanceOf(DatabaseException.class)
+      .hasMessage("An error occur when saving StoreEntity")
+      .hasCause(exception);
+
+    then(storeRepository).should(times(2)).saveAndFlush(storeEntity);
+    then(dbRetryService).should(times(2)).shouldRetry(exception);
+  }
+
+  @Test
+  void shouldNotRetryToSaveEntityWhenDataIntegrityViolationOccur() {
+    var storeEntity = createStoreEntity();
+    given(storeRepository.saveAndFlush(storeEntity)).willThrow(new DuplicateKeyException("Duplicate key exception"));
+
+    assertThatThrownBy(() -> storePersistenceService.save(storeEntity))
+      .isInstanceOf(DatabaseException.class)
+      .hasMessage("An error occur when saving StoreEntity")
+      .hasCauseInstanceOf(DuplicateKeyException.class)
+      .hasRootCauseMessage("Duplicate key exception");
+
+    then(storeRepository).should().saveAndFlush(storeEntity);
+  }
+
+  @Test
+  void shouldReturnsStoresPagingWhenFindAll() {
+    var stores = createTenStoreEntities();
+    var pagedStore = new PageImpl<>(stores, PageRequest.of(0, 10), stores.size());
+    given(storeRepository.findAll(any(Pageable.class))).willReturn(pagedStore);
+
+    var expectedResult = storePersistenceService.findAll(0, 10);
+
+    then(storeRepository).should().findAll(any(Pageable.class));
+    assertThat(expectedResult.getContent()).hasSize(10);
+  }
+
+  @Test
+  void shouldRetryToFindAllStoresWhenExceptionOccur() {
+    var exception = new RuntimeException("Timeout");
+    given(storeRepository.findAll(any(Pageable.class))).willThrow(exception);
+
+    assertThatThrownBy(() -> storePersistenceService.findAll(0, 10))
+      .isInstanceOf(DatabaseException.class)
+      .hasMessage("An error occur when find all stores")
+      .hasCause(exception);
+
+    then(storeRepository).should(times(2)).findAll(any(Pageable.class));
+  }
+
+  @Test
+  void shouldNotRetryToFindAllWhenDataIntegrityViolationOccur() {
+    var exception = new DataIntegrityViolationException("DataIntegrityViolationException");
+    given(storeRepository.findAll(any(Pageable.class))).willThrow(exception);
+
+    assertThatThrownBy(() -> storePersistenceService.findAll(0, 10))
+      .isInstanceOf(DatabaseException.class)
+      .hasMessage("An error occur when find all stores")
+      .hasCauseInstanceOf(DataIntegrityViolationException.class)
+      .hasRootCauseMessage("DataIntegrityViolationException");
+
+    then(storeRepository).should().findAll(any(Pageable.class));
+  }
+
+  @Test
+  void shouldReturnStoreWhenFindById() {
+    var id = UUID.randomUUID();
+    var storeEntity = createStoreEntity();
+    given(storeRepository.findById(anyString())).willReturn(Optional.of(storeEntity));
+
+    var expectedResult = storePersistenceService.findById(id);
+
+    then(storeRepository).should().findById(id.toString());
+    assertThat(expectedResult).isPresent();
+  }
+
+  @Test
+  void shouldRetryToFindStoreByIdWhenExceptionOccur() {
+    var id = UUID.randomUUID();
+    var exception = new RuntimeException("Timeout");
+    given(storeRepository.findById(anyString())).willThrow(exception);
+
+    assertThatThrownBy(() -> storePersistenceService.findById(id))
+      .isInstanceOf(DatabaseException.class)
+      .hasMessage("An error occur when find store by id")
+      .hasCause(exception);
+
+    then(storeRepository).should(times(2)).findById(id.toString());
+  }
+
+  @Test
+  void shouldNotRetryToFindStoreByIdWhenDataIntegrityViolationOccur() {
+    var id = UUID.randomUUID();
+    var exception = new DataIntegrityViolationException("DataIntegrityViolationException");
+    given(storeRepository.findById(anyString())).willThrow(exception);
+
+    assertThatThrownBy(() -> storePersistenceService.findById(id))
+      .isInstanceOf(DatabaseException.class)
+      .hasMessage("An error occur when find store by id")
+      .hasCauseInstanceOf(DataIntegrityViolationException.class)
+      .hasRootCauseMessage("DataIntegrityViolationException");
+
+    then(storeRepository).should().findById(id.toString());
+  }
+
+  @Configuration
+  @EnableRetry
+  @Import(StorePersistenceService.class)
+  static class StorePersistenceTestConfig {
+
+    @Bean("DBRetryService")
+    DBRetryService dbRetryService() {
+      return spy(DBRetryService.class);
     }
 
-    @Test
-    void shouldSaveStoreEntity() {
-        var storeEntity = createStoreEntity();
-        given(storeRepository.saveAndFlush(any(StoreEntity.class))).willReturn(storeEntity);
-
-        var savedEntity = storePersistenceService.save(storeEntity);
-
-        then(storeRepository).should().saveAndFlush(storeEntity);
-        assertThat(savedEntity).isNotNull();
-        assertThat(savedEntity.getName()).isEqualTo("MAXI");
+    @Bean
+    StoreRepository storeRepository() {
+      return mock(StoreRepository.class);
     }
-
-    @Test
-    void shouldRetryToSaveEntityWhenExceptionOccur() {
-        var storeEntity = createStoreEntity();
-        var exception = new RuntimeException("Timeout");
-        given(storeRepository.saveAndFlush(storeEntity)).willThrow(exception);
-
-        assertThatThrownBy(() -> storePersistenceService.save(storeEntity))
-            .isInstanceOf(DatabaseException.class)
-            .hasMessage("An error occur when saving StoreEntity")
-            .hasCause(exception);
-
-        then(storeRepository).should(times(2)).saveAndFlush(storeEntity);
-        then(dbRetryService).should(times(2)).shouldRetry(exception);
-    }
-
-    @Test
-    void shouldNotRetryToSaveEntityWhenDataIntegrityViolationOccur() {
-        var storeEntity = createStoreEntity();
-        given(storeRepository.saveAndFlush(storeEntity)).willThrow(new DuplicateKeyException("Duplicate key exception"));
-
-        assertThatThrownBy(() -> storePersistenceService.save(storeEntity))
-            .isInstanceOf(DatabaseException.class)
-            .hasMessage("An error occur when saving StoreEntity")
-            .hasCauseInstanceOf(DuplicateKeyException.class)
-            .hasRootCauseMessage("Duplicate key exception");
-
-        then(storeRepository).should().saveAndFlush(storeEntity);
-    }
-
-    @Test
-    void shouldReturnsStoresPagingWhenFindAll() {
-        var stores = createTenStoreEntities();
-        var pagedStore = new PageImpl<>(stores, PageRequest.of(0, 10), stores.size());
-        given(storeRepository.findAll(any(Pageable.class))).willReturn(pagedStore);
-
-        var expectedResult = storePersistenceService.findAll(0, 10);
-
-        then(storeRepository).should().findAll(any(Pageable.class));
-        assertThat(expectedResult.getContent()).hasSize(10);
-    }
-
-    @Test
-    void shouldRetryToFindAllStoresWhenExceptionOccur() {
-        var exception = new RuntimeException("Timeout");
-        given(storeRepository.findAll(any(Pageable.class))).willThrow(exception);
-
-        assertThatThrownBy(() -> storePersistenceService.findAll(0, 10))
-            .isInstanceOf(DatabaseException.class)
-            .hasMessage("An error occur when find all stores")
-            .hasCause(exception);
-
-        then(storeRepository).should(times(2)).findAll(any(Pageable.class));
-    }
-
-    @Test
-    void shouldNotRetryToFindAllWhenDataIntegrityViolationOccur() {
-        var exception = new DataIntegrityViolationException("DataIntegrityViolationException");
-        given(storeRepository.findAll(any(Pageable.class))).willThrow(exception);
-
-        assertThatThrownBy(() -> storePersistenceService.findAll(0, 10))
-            .isInstanceOf(DatabaseException.class)
-            .hasMessage("An error occur when find all stores")
-            .hasCauseInstanceOf(DataIntegrityViolationException.class)
-            .hasRootCauseMessage("DataIntegrityViolationException");
-
-        then(storeRepository).should().findAll(any(Pageable.class));
-    }
-
-    @Test
-    void shouldReturnStoreWhenFindById() {
-        var id = UUID.randomUUID();
-        var storeEntity = createStoreEntity();
-        given(storeRepository.findById(anyString())).willReturn(Optional.of(storeEntity));
-
-        var expectedResult = storePersistenceService.findById(id);
-
-        then(storeRepository).should().findById(id.toString());
-        assertThat(expectedResult).isPresent();
-    }
-
-    @Test
-    void shouldRetryToFindStoreByIdWhenExceptionOccur() {
-        var id = UUID.randomUUID();
-        var exception = new RuntimeException("Timeout");
-        given(storeRepository.findById(anyString())).willThrow(exception);
-
-        assertThatThrownBy(() -> storePersistenceService.findById(id))
-            .isInstanceOf(DatabaseException.class)
-            .hasMessage("An error occur when find store by id")
-            .hasCause(exception);
-
-        then(storeRepository).should(times(2)).findById(id.toString());
-    }
-
-    @Test
-    void shouldNotRetryToFindStoreByIdWhenDataIntegrityViolationOccur() {
-        var id = UUID.randomUUID();
-        var exception = new DataIntegrityViolationException("DataIntegrityViolationException");
-        given(storeRepository.findById(anyString())).willThrow(exception);
-
-        assertThatThrownBy(() -> storePersistenceService.findById(id))
-            .isInstanceOf(DatabaseException.class)
-            .hasMessage("An error occur when find store by id")
-            .hasCauseInstanceOf(DataIntegrityViolationException.class)
-            .hasRootCauseMessage("DataIntegrityViolationException");
-
-        then(storeRepository).should().findById(id.toString());
-    }
-
-    @Configuration
-    @EnableRetry
-    @Import(StorePersistenceService.class)
-    static class StorePersistenceTestConfig {
-
-        @Bean("DBRetryService")
-        DBRetryService dbRetryService() {
-            return spy(DBRetryService.class);
-        }
-
-        @Bean
-        StoreRepository storeRepository() {
-            return mock(StoreRepository.class);
-        }
-    }
+  }
 }

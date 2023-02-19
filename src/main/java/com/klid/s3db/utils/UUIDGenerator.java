@@ -10,9 +10,9 @@ import java.util.UUID;
 @Component
 public class UUIDGenerator {
 
-    public static final String UUID_PATTERN = "([a-fA-F0-9]{8}(-[a-fA-F0-9]{4}){4}[a-fA-F0-9]{8})";
+  public static final String UUID_PATTERN = "([a-fA-F0-9]{8}(-[a-fA-F0-9]{4}){4}[a-fA-F0-9]{8})";
 
-    public String uuid() {
-        return UUID.randomUUID().toString();
-    }
+  public String uuid() {
+    return UUID.randomUUID().toString();
+  }
 }

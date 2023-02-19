@@ -16,11 +16,11 @@ import java.util.Map;
 @RestController
 public class LauncherApiController {
 
-    private final LaunchProcessCommand launchProcessCommand;
+  private final LaunchProcessCommand launchProcessCommand;
 
-    @PostMapping("/download")
-    public ResponseEntity<Map<String, Long>> launch(@RequestParam(value = "filename") String filename) {
-        var result = launchProcessCommand.execute(filename);
-        return ResponseEntity.ok(Map.of("sales", result));
-    }
+  @PostMapping("/download")
+  public ResponseEntity<Map<String, Long>> launch(@RequestParam(value = "filename") String filename) {
+    var result = launchProcessCommand.execute(filename);
+    return ResponseEntity.ok(Map.of("sales", result));
+  }
 }

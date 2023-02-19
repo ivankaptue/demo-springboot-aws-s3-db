@@ -7,14 +7,14 @@ import java.io.Serializable;
  */
 public class DatabaseException extends RuntimeException {
 
-    private final Serializable entity;
+  private final Serializable entity;
 
-    public DatabaseException(String message, Throwable cause, Serializable entity) {
-        super(message, cause);
-        this.entity = entity;
-    }
+  public DatabaseException(String message, Throwable cause, Serializable entity) {
+    super(message, cause);
+    this.entity = entity;
+  }
 
-    public Serializable getEntity() {
-        return entity;
-    }
+  public Serializable getEntity() {
+    return entity;
+  }
 }

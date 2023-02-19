@@ -9,13 +9,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class UUIDGeneratorTest {
 
-    private final UUIDGenerator uuidGenerator = new UUIDGenerator();
+  private final UUIDGenerator uuidGenerator = new UUIDGenerator();
 
-    @Test
-    void shouldReturnsValidUUID() {
-        var uuid = uuidGenerator.uuid();
+  @Test
+  void shouldReturnsValidUUID() {
+    var uuid = uuidGenerator.uuid();
 
-        assertThat(uuid).isNotBlank();
-        assertThat(uuid).matches(UUIDGenerator.UUID_PATTERN);
-    }
+    assertThat(uuid).isNotBlank();
+    assertThat(uuid).matches(UUIDGenerator.UUID_PATTERN);
+  }
 }
