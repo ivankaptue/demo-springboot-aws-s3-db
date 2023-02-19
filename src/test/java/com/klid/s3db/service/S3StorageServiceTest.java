@@ -31,99 +31,99 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class S3StorageServiceTest {
 
-    private static final String BUCKET_NAME = "bucket-name";
-    private static final String KEY = "a84d54d9-62aa-44a3-9b89-3c50e322ee29";
+  private static final String BUCKET_NAME = "bucket-name";
+  private static final String KEY = "a84d54d9-62aa-44a3-9b89-3c50e322ee29";
 
-    @Mock
-    private S3Client s3Client;
+  @Mock
+  private S3Client s3Client;
 
-    private S3StorageService s3StorageService;
+  private S3StorageService s3StorageService;
 
-    @BeforeEach
-    void beforeEach() {
-        s3StorageService = new S3StorageService(s3Client, BUCKET_NAME);
+  @BeforeEach
+  void beforeEach() {
+    s3StorageService = new S3StorageService(s3Client, BUCKET_NAME);
+  }
+
+  @Nested
+  @DisplayName("Test getFileAsInputStream from S3 bucket")
+  class GetFileTest {
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void shouldReturnsFileContentAsInputStreamFromS3BucketWhenGetFileAsInputStream() {
+      var fileName = getFileName();
+      var objectRequest = getGetObjectRequest(fileName);
+      ResponseInputStream<GetObjectResponse> objectResponse = mock(ResponseInputStream.class);
+      given(s3Client.getObject(any(GetObjectRequest.class))).willReturn(objectResponse);
+
+      var inputStream = s3StorageService.getFileAsInputStream(fileName);
+
+      then(s3Client).should().getObject(objectRequest);
+      assertThat(inputStream).isEqualTo(objectResponse);
     }
 
-    @Nested
-    @DisplayName("Test getFileAsInputStream from S3 bucket")
-    class GetFileTest {
+    @Test
+    void shouldThrowStorageServiceExceptionWhenS3ClientThrowsNoSuchKeyException() {
+      var fileName = getFileName();
+      given(s3Client.getObject(any(GetObjectRequest.class))).willThrow(NoSuchKeyException.class);
 
-        @SuppressWarnings("unchecked")
-        @Test
-        void shouldReturnsFileContentAsInputStreamFromS3BucketWhenGetFileAsInputStream() {
-            var fileName = getFileName();
-            var objectRequest = getGetObjectRequest(fileName);
-            ResponseInputStream<GetObjectResponse> objectResponse = mock(ResponseInputStream.class);
-            given(s3Client.getObject(any(GetObjectRequest.class))).willReturn(objectResponse);
-
-            var inputStream = s3StorageService.getFileAsInputStream(fileName);
-
-            then(s3Client).should().getObject(objectRequest);
-            assertThat(inputStream).isEqualTo(objectResponse);
-        }
-
-        @Test
-        void shouldThrowStorageServiceExceptionWhenS3ClientThrowsNoSuchKeyException() {
-            var fileName = getFileName();
-            given(s3Client.getObject(any(GetObjectRequest.class))).willThrow(NoSuchKeyException.class);
-
-            assertGetFileContentException(
-                    fileName,
-                    NoSuchKeyException.class,
-                    "Key does not exist",
-                    HttpStatus.NOT_FOUND
-            );
-        }
-
-        @Test
-        void shouldThrowStorageServiceExceptionWhenS3ClientThrowsSdkClientException() {
-            var fileName = getFileName();
-            given(s3Client.getObject(any(GetObjectRequest.class))).willThrow(SdkClientException.class);
-
-            assertGetFileContentException(
-                    fileName,
-                    SdkClientException.class,
-                    "Client Error when calling S3 Service",
-                    HttpStatus.BAD_REQUEST
-            );
-        }
-
-        @Test
-        void shouldThrowStorageServiceExceptionWhenS3ClientThrowsS3Exception() {
-            var fileName = getFileName();
-            given(s3Client.getObject(any(GetObjectRequest.class))).willThrow(S3Exception.class);
-
-            assertGetFileContentException(
-                    fileName,
-                    S3Exception.class,
-                    "Server Error when calling S3 Service",
-                    HttpStatus.SERVICE_UNAVAILABLE
-            );
-        }
+      assertGetFileContentException(
+        fileName,
+        NoSuchKeyException.class,
+        "Key does not exist",
+        HttpStatus.NOT_FOUND
+      );
     }
 
-    private static String getFileName() {
-        return KEY + ".txt";
+    @Test
+    void shouldThrowStorageServiceExceptionWhenS3ClientThrowsSdkClientException() {
+      var fileName = getFileName();
+      given(s3Client.getObject(any(GetObjectRequest.class))).willThrow(SdkClientException.class);
+
+      assertGetFileContentException(
+        fileName,
+        SdkClientException.class,
+        "Client Error when calling S3 Service",
+        HttpStatus.BAD_REQUEST
+      );
     }
 
-    private void assertGetFileContentException(
-            String key,
-            Class<? extends Exception> exceptionCauseClass,
-            String exceptionMessage,
-            HttpStatus exceptionHttpStatus) {
+    @Test
+    void shouldThrowStorageServiceExceptionWhenS3ClientThrowsS3Exception() {
+      var fileName = getFileName();
+      given(s3Client.getObject(any(GetObjectRequest.class))).willThrow(S3Exception.class);
 
-        assertThatThrownBy(() -> s3StorageService.getFileAsInputStream(key))
-                .isInstanceOf(StorageServiceException.class)
-                .hasMessage(exceptionMessage)
-                .hasCauseInstanceOf(exceptionCauseClass)
-                .extracting("httpStatus")
-                .isEqualTo(exceptionHttpStatus);
+      assertGetFileContentException(
+        fileName,
+        S3Exception.class,
+        "Server Error when calling S3 Service",
+        HttpStatus.SERVICE_UNAVAILABLE
+      );
     }
+  }
 
-    private GetObjectRequest getGetObjectRequest(String key) {
-        return GetObjectRequest.builder()
-                .bucket(BUCKET_NAME)
-                .key(key)
-                .build();
-    }
+  private static String getFileName() {
+    return KEY + ".txt";
+  }
+
+  private void assertGetFileContentException(
+    String key,
+    Class<? extends Exception> exceptionCauseClass,
+    String exceptionMessage,
+    HttpStatus exceptionHttpStatus) {
+
+    assertThatThrownBy(() -> s3StorageService.getFileAsInputStream(key))
+      .isInstanceOf(StorageServiceException.class)
+      .hasMessage(exceptionMessage)
+      .hasCauseInstanceOf(exceptionCauseClass)
+      .extracting("httpStatus")
+      .isEqualTo(exceptionHttpStatus);
+  }
+
+  private GetObjectRequest getGetObjectRequest(String key) {
+    return GetObjectRequest.builder()
+      .bucket(BUCKET_NAME)
+      .key(key)
+      .build();
+  }
 }

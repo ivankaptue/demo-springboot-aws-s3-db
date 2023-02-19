@@ -5,7 +5,7 @@ package com.klid.s3db.exception;
  */
 public class S3DBException extends RuntimeException {
 
-    public S3DBException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public S3DBException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

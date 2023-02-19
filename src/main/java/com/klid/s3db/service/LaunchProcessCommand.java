@@ -26,50 +26,50 @@ import java.io.IOException;
 @Service
 public class LaunchProcessCommand {
 
-    private final StorageService storageService;
-    private final LineEntryValidator lineEntryValidator;
-    private final SaleItemConverter saleItemConverter;
-    private final StorePersistenceService storePersistenceService;
-    private final SalePersistenceService salePersistenceService;
-    private final UUIDGenerator uuidGenerator;
-    private final ReaderProvider readerProvider;
+  private final StorageService storageService;
+  private final LineEntryValidator lineEntryValidator;
+  private final SaleItemConverter saleItemConverter;
+  private final StorePersistenceService storePersistenceService;
+  private final SalePersistenceService salePersistenceService;
+  private final UUIDGenerator uuidGenerator;
+  private final ReaderProvider readerProvider;
 
-    public long execute(String filename) {
-        log.info("Start processing file {}", filename);
+  public long execute(String filename) {
+    log.info("Start processing file {}", filename);
 
-        var contentInputStream = storageService.getFileAsInputStream(filename);
-        try (var bufferedReader = readerProvider.provideReader(contentInputStream)) {
-            var storeEntity = createStoreEntity(filename);
-            var count = processData(storeEntity, bufferedReader);
+    var contentInputStream = storageService.getFileAsInputStream(filename);
+    try (var bufferedReader = readerProvider.provideReader(contentInputStream)) {
+      var storeEntity = createStoreEntity(filename);
+      var count = processData(storeEntity, bufferedReader);
 
-            log.info("End processing file {}. {} items processed", filename, count);
+      log.info("End processing file {}. {} items processed", filename, count);
 
-            return count;
-        } catch (IOException ex) {
-            var message = String.format("An error occur on processing file %s", filename);
-            throw new S3DBException(message, ex);
-        }
+      return count;
+    } catch (IOException ex) {
+      var message = String.format("An error occur on processing file %s", filename);
+      throw new S3DBException(message, ex);
     }
+  }
 
-    private StoreEntity createStoreEntity(String filename) {
-        var storeEntity = StoreEntity.builder()
-            .id(uuidGenerator.uuid())
-            .name(filename)
-            .status(StatusEnum.PENDING)
-            .build();
+  private StoreEntity createStoreEntity(String filename) {
+    var storeEntity = StoreEntity.builder()
+      .id(uuidGenerator.uuid())
+      .name(filename)
+      .status(StatusEnum.PENDING)
+      .build();
 
-        return storePersistenceService.save(storeEntity);
-    }
+    return storePersistenceService.save(storeEntity);
+  }
 
-    private long processData(StoreEntity storeEntity, BufferedReader bufferedReader) {
-        return bufferedReader.lines()
-            .skip(1)
-            .filter(StringUtils::hasText)
-            .peek(lineEntryValidator::validate)
-            .map(saleItemConverter::convert)
-            .peek(item -> item.setId(uuidGenerator.uuid()))
-            .peek(item -> item.setStoreEntity(storeEntity))
-            .map(salePersistenceService::save)
-            .count();
-    }
+  private long processData(StoreEntity storeEntity, BufferedReader bufferedReader) {
+    return bufferedReader.lines()
+      .skip(1)
+      .filter(StringUtils::hasText)
+      .peek(lineEntryValidator::validate)
+      .map(saleItemConverter::convert)
+      .peek(item -> item.setId(uuidGenerator.uuid()))
+      .peek(item -> item.setStoreEntity(storeEntity))
+      .map(salePersistenceService::save)
+      .count();
+  }
 }

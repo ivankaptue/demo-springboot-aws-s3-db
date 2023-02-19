@@ -5,11 +5,11 @@ package com.klid.s3db.exception;
  */
 public class SaleConversionException extends RuntimeException {
 
-    public SaleConversionException(String message) {
-        super(message);
-    }
+  public SaleConversionException(String message) {
+    super(message);
+  }
 
-    public SaleConversionException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public SaleConversionException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

@@ -1,29 +1,29 @@
 app:
-    retry:
-        maxAttempts: 2
-        backoffDelay: 300
-    aws:
-        s3:
-            bucket: ${AWS_S3_BUCKET}
-            region: ${AWS_S3_REGION}
-            access-key: ${AWS_S3_ACCESS_KEY}
-            secret: ${AWS_S3_SECRET}
-            max-attempts: ${AWS_S3_MAX_ATTEMPTS}
-            timeout-millis: ${AWS_S3_TIMEOUT_MILLIS}
+  retry:
+    maxAttempts: 2
+    backoffDelay: 300
+  aws:
+    s3:
+      bucket: ${AWS_S3_BUCKET}
+      region: ${AWS_S3_REGION}
+      access-key: ${AWS_S3_ACCESS_KEY}
+      secret: ${AWS_S3_SECRET}
+      max-attempts: ${AWS_S3_MAX_ATTEMPTS}
+      timeout-millis: ${AWS_S3_TIMEOUT_MILLIS}
 management:
-    server:
-        port: 9990
+  server:
+    port: 9990
 
 server:
-    shutdown: GRACEFUL
+  shutdown: GRACEFUL
 
 spring:
-    datasource:
-        url: ${DATASOURCE_URL}
-        username: ${DATASOURCE_USERNAME}
-        password: ${DATASOURCE_PASSWORD}
-        driver-class-name: ${DATASOURCE_DRIVER}
-    jpa:
-        show-sql: true
-        hibernate:
-            ddl-auto: none
+  datasource:
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+    driver-class-name: ${DATASOURCE_DRIVER}
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none

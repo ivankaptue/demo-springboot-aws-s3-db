@@ -12,6 +12,7 @@ Once the data is saved, it is exposed via a Rest API to the various consumers
 1. Update application.yml to set your local configurations
 2. Run the commands below to start PostgreSQL in docker container, run flyway migrations scripts and then run the
    application
-    - `make start-db` to start postgresql in docker container and apply flyway migrations
-    - `mvn clean install` to build
-    - `mvn spring-boot:run` to run
+
+- `make start-db` to start postgresql in docker container and apply flyway migrations
+- `mvn clean install` to build
+- `mvn spring-boot:run` to run

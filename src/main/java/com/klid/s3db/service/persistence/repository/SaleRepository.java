@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SaleRepository extends JpaRepository<SaleEntity, String> {
 
-    Page<SaleEntity> findAllByStoreEntity(StoreEntity storeEntity, Pageable pageable);
+  Page<SaleEntity> findAllByStoreEntity(StoreEntity storeEntity, Pageable pageable);
 }

@@ -18,44 +18,44 @@ import java.math.BigDecimal;
 @Entity
 public class SaleEntity implements Serializable {
 
-    @Id
-    @Column(name = "id", unique = true)
-    private String id;
+  @Id
+  @Column(name = "id", unique = true)
+  private String id;
 
-    @Column(name = "product", nullable = false)
-    private String product;
+  @Column(name = "product", nullable = false)
+  private String product;
 
-    @Column(name = "quantity", nullable = false)
-    private int quantity;
+  @Column(name = "quantity", nullable = false)
+  private int quantity;
 
-    @Column(name = "price", nullable = false)
-    private BigDecimal price;
+  @Column(name = "price", nullable = false)
+  private BigDecimal price;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id", nullable = false)
-    private StoreEntity storeEntity;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "store_id", nullable = false)
+  private StoreEntity storeEntity;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof SaleEntity saleEntity)) return false;
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof SaleEntity saleEntity)) return false;
 
-        return getId().equals(saleEntity.getId());
-    }
+    return getId().equals(saleEntity.getId());
+  }
 
-    @Override
-    public int hashCode() {
-        return getId().hashCode();
-    }
+  @Override
+  public int hashCode() {
+    return getId().hashCode();
+  }
 
-    @Override
-    public String toString() {
-        return "SaleEntity{" +
-            "id='" + id + '\'' +
-            ", product='" + product + '\'' +
-            ", quantity=" + quantity +
-            ", price=" + price +
-            ", storeEntity=" + storeEntity +
-            '}';
-    }
+  @Override
+  public String toString() {
+    return "SaleEntity{" +
+      "id='" + id + '\'' +
+      ", product='" + product + '\'' +
+      ", quantity=" + quantity +
+      ", price=" + price +
+      ", storeEntity=" + storeEntity +
+      '}';
+  }
 }

@@ -33,80 +33,80 @@ import static org.mockito.BDDMockito.then;
 @ExtendWith(MockitoExtension.class)
 class SaleManagerTest {
 
-    private static final String id = UUID.randomUUID().toString();
+  private static final String id = UUID.randomUUID().toString();
 
-    @Spy
-    private ArgumentValidator argumentValidator;
-    @Spy
-    private SaleMapper saleMapper;
-    @Mock
-    private SalePersistenceService salePersistenceService;
-    @Mock
-    private StorePersistenceService storePersistenceService;
-    @InjectMocks
-    private SaleManager saleManager;
+  @Spy
+  private ArgumentValidator argumentValidator;
+  @Spy
+  private SaleMapper saleMapper;
+  @Mock
+  private SalePersistenceService salePersistenceService;
+  @Mock
+  private StorePersistenceService storePersistenceService;
+  @InjectMocks
+  private SaleManager saleManager;
 
-    @ParameterizedTest
-    @ValueSource(ints = {0, -1, -2, -10})
-    void shouldThrowArgumentValidationExceptionWhenPageIsLessThanOne(int page) {
-        assertThatThrownBy(() -> saleManager.getAll(page, 20, id))
-            .isInstanceOf(ArgumentValidationException.class)
-            .hasMessage("Page must be greater than 1");
-    }
+  @ParameterizedTest
+  @ValueSource(ints = {0, -1, -2, -10})
+  void shouldThrowArgumentValidationExceptionWhenPageIsLessThanOne(int page) {
+    assertThatThrownBy(() -> saleManager.getAll(page, 20, id))
+      .isInstanceOf(ArgumentValidationException.class)
+      .hasMessage("Page must be greater than 1");
+  }
 
-    @ParameterizedTest
-    @ValueSource(ints = {0, 5, 9, -1})
-    void shouldThrowArgumentValidationExceptionWhenSizeIsLessThanTen(int size) {
-        assertThatThrownBy(() -> saleManager.getAll(1, size, id))
-            .isInstanceOf(ArgumentValidationException.class)
-            .hasMessage("Size must be greater than 10");
-    }
+  @ParameterizedTest
+  @ValueSource(ints = {0, 5, 9, -1})
+  void shouldThrowArgumentValidationExceptionWhenSizeIsLessThanTen(int size) {
+    assertThatThrownBy(() -> saleManager.getAll(1, size, id))
+      .isInstanceOf(ArgumentValidationException.class)
+      .hasMessage("Size must be greater than 10");
+  }
 
-    @Test
-    void shouldThrowArgumentValidationExceptionWhenStoreIdIsNull() {
-        assertThatThrownBy(() -> saleManager.getAll(1, 10, null))
-            .isInstanceOf(ArgumentValidationException.class)
-            .hasMessage("Id must be defined");
-    }
+  @Test
+  void shouldThrowArgumentValidationExceptionWhenStoreIdIsNull() {
+    assertThatThrownBy(() -> saleManager.getAll(1, 10, null))
+      .isInstanceOf(ArgumentValidationException.class)
+      .hasMessage("Id must be defined");
+  }
 
-    @Test
-    void shouldThrowArgumentValidationExceptionWhenStoreIdIsNotAValidUUID() {
-        assertThatThrownBy(() -> saleManager.getAll(1, 10, "null"))
-            .isInstanceOf(ArgumentValidationException.class)
-            .hasMessage("Id must be of type UUID");
-    }
+  @Test
+  void shouldThrowArgumentValidationExceptionWhenStoreIdIsNotAValidUUID() {
+    assertThatThrownBy(() -> saleManager.getAll(1, 10, "null"))
+      .isInstanceOf(ArgumentValidationException.class)
+      .hasMessage("Id must be of type UUID");
+  }
 
-    @Test
-    void shouldThrowStoreEntityNotFoundWhenStoreIdNotSaved() {
-        given(storePersistenceService.findById(any(UUID.class))).willReturn(Optional.empty());
+  @Test
+  void shouldThrowStoreEntityNotFoundWhenStoreIdNotSaved() {
+    given(storePersistenceService.findById(any(UUID.class))).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> saleManager.getAll(1, 10, id))
-            .isInstanceOf(StoreEntityNotFoundException.class)
-            .hasMessage("Store entity not found")
-            .extracting("id")
-            .isEqualTo(UUID.fromString(id));
-    }
+    assertThatThrownBy(() -> saleManager.getAll(1, 10, id))
+      .isInstanceOf(StoreEntityNotFoundException.class)
+      .hasMessage("Store entity not found")
+      .extracting("id")
+      .isEqualTo(UUID.fromString(id));
+  }
 
-    @Test
-    void shouldReturnPageOfSaleFoundInDatabase() {
-        int page = 1;
-        int size = 10;
-        var storeEntity = createStoreEntity();
-        var sales = SaleBuilder.createSaleEntities(10);
-        var pageResult = new PageImpl<>(sales, PageRequest.of(0, size), sales.size());
-        given(storePersistenceService.findById(any(UUID.class))).willReturn(Optional.of(storeEntity));
-        given(salePersistenceService.findAll(anyInt(), anyInt(), any(StoreEntity.class))).willReturn(pageResult);
+  @Test
+  void shouldReturnPageOfSaleFoundInDatabase() {
+    int page = 1;
+    int size = 10;
+    var storeEntity = createStoreEntity();
+    var sales = SaleBuilder.createSaleEntities(10);
+    var pageResult = new PageImpl<>(sales, PageRequest.of(0, size), sales.size());
+    given(storePersistenceService.findById(any(UUID.class))).willReturn(Optional.of(storeEntity));
+    given(salePersistenceService.findAll(anyInt(), anyInt(), any(StoreEntity.class))).willReturn(pageResult);
 
-        var actualPage = saleManager.getAll(page, size, id);
+    var actualPage = saleManager.getAll(page, size, id);
 
-        then(argumentValidator).should().validate(page, size);
-        then(saleMapper).should().mapFromSaleEntities(sales);
-        then(storePersistenceService).should().findById(UUID.fromString(id));
-        then(salePersistenceService).should().findAll(0, size, storeEntity);
-        assertThat(actualPage).isNotNull();
-        assertThat(actualPage.getContent()).hasSize(10);
-        assertThat(actualPage.getTotalElements()).isEqualTo(10);
-        assertThat(actualPage.getPageable().getOffset()).isZero();
-        assertThat(actualPage.getPageable().getPageSize()).isEqualTo(10);
-    }
+    then(argumentValidator).should().validate(page, size);
+    then(saleMapper).should().mapFromSaleEntities(sales);
+    then(storePersistenceService).should().findById(UUID.fromString(id));
+    then(salePersistenceService).should().findAll(0, size, storeEntity);
+    assertThat(actualPage).isNotNull();
+    assertThat(actualPage.getContent()).hasSize(10);
+    assertThat(actualPage.getTotalElements()).isEqualTo(10);
+    assertThat(actualPage.getPageable().getOffset()).isZero();
+    assertThat(actualPage.getPageable().getPageSize()).isEqualTo(10);
+  }
 }

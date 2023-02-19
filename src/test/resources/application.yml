@@ -1,12 +1,12 @@
 app:
-    retry:
-        maxAttempts: 2
-        backoffDelay: 100
-    aws:
-        s3:
-            bucket: bucket-name
-            region: region
-            access-key: access-key
-            secret: Secret
-            max-attempts: 2
-            timeout-millis: 500
+  retry:
+    maxAttempts: 2
+    backoffDelay: 100
+  aws:
+    s3:
+      bucket: bucket-name
+      region: region
+      access-key: access-key
+      secret: Secret
+      max-attempts: 2
+      timeout-millis: 500

@@ -34,87 +34,87 @@ import static org.mockito.BDDMockito.*;
 @ExtendWith(MockitoExtension.class)
 class LaunchProcessCommandTest {
 
-    private static final String FILE_NAME = "file.csv";
-    private static final String UUID = "2359b8e8-27de-4072-bbd8-63ff73b0341a";
+  private static final String FILE_NAME = "file.csv";
+  private static final String UUID = "2359b8e8-27de-4072-bbd8-63ff73b0341a";
 
-    @Mock
-    private StorageService storageService;
-    @Mock
-    private LineEntryValidator lineEntryValidator;
-    @Mock
-    private SaleItemConverter saleItemConverter;
-    @Mock
-    private StorePersistenceService storePersistenceService;
-    @Mock
-    private SalePersistenceService salePersistenceService;
-    @Mock
-    private UUIDGenerator uuidGenerator;
-    @Mock
-    private ReaderProvider readerProvider;
-    @InjectMocks
-    private LaunchProcessCommand launchProcessCommand;
+  @Mock
+  private StorageService storageService;
+  @Mock
+  private LineEntryValidator lineEntryValidator;
+  @Mock
+  private SaleItemConverter saleItemConverter;
+  @Mock
+  private StorePersistenceService storePersistenceService;
+  @Mock
+  private SalePersistenceService salePersistenceService;
+  @Mock
+  private UUIDGenerator uuidGenerator;
+  @Mock
+  private ReaderProvider readerProvider;
+  @InjectMocks
+  private LaunchProcessCommand launchProcessCommand;
 
-    @Test
-    void shouldSalesFromFileToDB() {
-        // given
-        given(storageService.getFileAsInputStream(FILE_NAME)).willReturn(getInputStream());
-        given(uuidGenerator.uuid()).willReturn(UUID);
-        given(readerProvider.provideReader(any())).willCallRealMethod();
-        willCallRealMethod().given(lineEntryValidator).validate(anyString());
-        given(saleItemConverter.convert(any(String.class))).willCallRealMethod();
-        given(storePersistenceService.save(any(StoreEntity.class))).will(extractPassedArgument());
-        given(salePersistenceService.save(any(SaleEntity.class))).will(extractPassedArgument());
+  @Test
+  void shouldSalesFromFileToDB() {
+    // given
+    given(storageService.getFileAsInputStream(FILE_NAME)).willReturn(getInputStream());
+    given(uuidGenerator.uuid()).willReturn(UUID);
+    given(readerProvider.provideReader(any())).willCallRealMethod();
+    willCallRealMethod().given(lineEntryValidator).validate(anyString());
+    given(saleItemConverter.convert(any(String.class))).willCallRealMethod();
+    given(storePersistenceService.save(any(StoreEntity.class))).will(extractPassedArgument());
+    given(salePersistenceService.save(any(SaleEntity.class))).will(extractPassedArgument());
 
-        // when
-        var processedItemsCount = launchProcessCommand.execute(FILE_NAME);
+    // when
+    var processedItemsCount = launchProcessCommand.execute(FILE_NAME);
 
-        // then
-        var storeCaptor = ArgumentCaptor.forClass(StoreEntity.class);
-        var saleCaptor = ArgumentCaptor.forClass(SaleEntity.class);
-        var expectedStoreEntity = buildStoreEntity();
+    // then
+    var storeCaptor = ArgumentCaptor.forClass(StoreEntity.class);
+    var saleCaptor = ArgumentCaptor.forClass(SaleEntity.class);
+    var expectedStoreEntity = buildStoreEntity();
 
-        assertThat(processedItemsCount).isEqualTo(5);
-        then(storageService).should().getFileAsInputStream(FILE_NAME);
-        then(storePersistenceService).should().save(storeCaptor.capture());
-        assertThat(storeCaptor.getValue()).usingRecursiveComparison().isEqualTo(expectedStoreEntity);
-        then(lineEntryValidator).should(times(5)).validate(anyString());
-        then(saleItemConverter).should(times(5)).convert(anyString());
-        then(salePersistenceService).should(times(5)).save(saleCaptor.capture());
-        assertThat(saleCaptor.getAllValues())
-            .allMatch(sale ->
-                UUID.equals(sale.getId()) && Objects.equals(sale.getStoreEntity(), expectedStoreEntity));
-    }
+    assertThat(processedItemsCount).isEqualTo(5);
+    then(storageService).should().getFileAsInputStream(FILE_NAME);
+    then(storePersistenceService).should().save(storeCaptor.capture());
+    assertThat(storeCaptor.getValue()).usingRecursiveComparison().isEqualTo(expectedStoreEntity);
+    then(lineEntryValidator).should(times(5)).validate(anyString());
+    then(saleItemConverter).should(times(5)).convert(anyString());
+    then(salePersistenceService).should(times(5)).save(saleCaptor.capture());
+    assertThat(saleCaptor.getAllValues())
+      .allMatch(sale ->
+        UUID.equals(sale.getId()) && Objects.equals(sale.getStoreEntity(), expectedStoreEntity));
+  }
 
-    @Test
-    void shouldThrowIOExceptionWhenInputStreamCreateException() {
-        given(readerProvider.provideReader(any())).willAnswer(invocation -> {
-            throw new IOException();
-        });
+  @Test
+  void shouldThrowIOExceptionWhenInputStreamCreateException() {
+    given(readerProvider.provideReader(any())).willAnswer(invocation -> {
+      throw new IOException();
+    });
 
-        assertThatThrownBy(() -> launchProcessCommand.execute(FILE_NAME))
-            .isInstanceOf(S3DBException.class)
-            .hasMessage(String.format("An error occur on processing file %s", FILE_NAME));
+    assertThatThrownBy(() -> launchProcessCommand.execute(FILE_NAME))
+      .isInstanceOf(S3DBException.class)
+      .hasMessage(String.format("An error occur on processing file %s", FILE_NAME));
 
-        then(storePersistenceService).shouldHaveNoInteractions();
-        then(salePersistenceService).shouldHaveNoInteractions();
-        then(uuidGenerator).shouldHaveNoInteractions();
-        then(lineEntryValidator).shouldHaveNoInteractions();
-        then(saleItemConverter).shouldHaveNoInteractions();
-    }
+    then(storePersistenceService).shouldHaveNoInteractions();
+    then(salePersistenceService).shouldHaveNoInteractions();
+    then(uuidGenerator).shouldHaveNoInteractions();
+    then(lineEntryValidator).shouldHaveNoInteractions();
+    then(saleItemConverter).shouldHaveNoInteractions();
+  }
 
-    private StoreEntity buildStoreEntity() {
-        return StoreEntity.builder()
-            .id(UUID)
-            .name(FILE_NAME)
-            .status(StatusEnum.PENDING)
-            .build();
-    }
+  private StoreEntity buildStoreEntity() {
+    return StoreEntity.builder()
+      .id(UUID)
+      .name(FILE_NAME)
+      .status(StatusEnum.PENDING)
+      .build();
+  }
 
-    private InputStream getInputStream() {
-        return getClass().getResourceAsStream("/data/valid_input.csv");
-    }
+  private InputStream getInputStream() {
+    return getClass().getResourceAsStream("/data/valid_input.csv");
+  }
 
-    private static <T> Answer<T> extractPassedArgument() {
-        return invocation -> invocation.getArgument(0);
-    }
+  private static <T> Answer<T> extractPassedArgument() {
+    return invocation -> invocation.getArgument(0);
+  }
 }

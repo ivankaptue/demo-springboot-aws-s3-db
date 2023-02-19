@@ -15,11 +15,11 @@ import java.util.List;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface StoreMapper {
 
-    Store mapFromStoreEntity(final StoreEntity storeEntity);
+  Store mapFromStoreEntity(final StoreEntity storeEntity);
 
-    default List<Store> mapFromStoreEntities(@NonNull final List<StoreEntity> storeEntities) {
-        return storeEntities.stream()
-            .map(this::mapFromStoreEntity)
-            .toList();
-    }
+  default List<Store> mapFromStoreEntities(@NonNull final List<StoreEntity> storeEntities) {
+    return storeEntities.stream()
+      .map(this::mapFromStoreEntity)
+      .toList();
+  }
 }

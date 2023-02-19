@@ -12,7 +12,7 @@ import java.io.InputStreamReader;
 @Component
 public class ReaderProvider {
 
-    public BufferedReader provideReader(InputStream inputStream) {
-        return new BufferedReader(new InputStreamReader(inputStream));
-    }
+  public BufferedReader provideReader(InputStream inputStream) {
+    return new BufferedReader(new InputStreamReader(inputStream));
+  }
 }

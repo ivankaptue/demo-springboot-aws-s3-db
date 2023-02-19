@@ -16,14 +16,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class StoreManager {
 
-    private final ArgumentValidator argumentValidator;
-    private final StoreMapper storeMapper;
-    private final StorePersistenceService storePersistenceService;
+  private final ArgumentValidator argumentValidator;
+  private final StoreMapper storeMapper;
+  private final StorePersistenceService storePersistenceService;
 
-    public Page<Store> getAll(int page, int size) {
-        argumentValidator.validate(page, size);
-        var pagedStore = storePersistenceService.findAll(page - 1, size);
-        var stores = storeMapper.mapFromStoreEntities(pagedStore.getContent());
-        return new PageImpl<>(stores, pagedStore.getPageable(), pagedStore.getTotalElements());
-    }
+  public Page<Store> getAll(int page, int size) {
+    argumentValidator.validate(page, size);
+    var pagedStore = storePersistenceService.findAll(page - 1, size);
+    var stores = storeMapper.mapFromStoreEntities(pagedStore.getContent());
+    return new PageImpl<>(stores, pagedStore.getPageable(), pagedStore.getTotalElements());
+  }
 }

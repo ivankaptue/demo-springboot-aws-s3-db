@@ -17,19 +17,19 @@ import java.math.RoundingMode;
 @Service
 public class SaleItemConverter {
 
-    public SaleEntity convert(String line) {
-        log.info("Convert entry : {}", line);
+  public SaleEntity convert(String line) {
+    log.info("Convert entry : {}", line);
 
-        try {
-            var data = line.split(LineEntryValidator.ITEM_SEPARATOR);
+    try {
+      var data = line.split(LineEntryValidator.ITEM_SEPARATOR);
 
-            return SaleEntity.builder()
-                .product(data[0].strip())
-                .quantity(NumberUtils.parseNumber(data[1], Integer.class))
-                .price(NumberUtils.parseNumber(data[2], BigDecimal.class).setScale(2, RoundingMode.UNNECESSARY))
-                .build();
-        } catch (Exception ex) {
-            throw new SaleConversionException(String.format("Unexpected error when convert line %s", line), ex);
-        }
+      return SaleEntity.builder()
+        .product(data[0].strip())
+        .quantity(NumberUtils.parseNumber(data[1], Integer.class))
+        .price(NumberUtils.parseNumber(data[2], BigDecimal.class).setScale(2, RoundingMode.UNNECESSARY))
+        .build();
+    } catch (Exception ex) {
+      throw new SaleConversionException(String.format("Unexpected error when convert line %s", line), ex);
     }
+  }
 }
