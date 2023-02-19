@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author Ivan Kaptue
@@ -62,14 +63,18 @@ public class LaunchProcessCommand {
   }
 
   private long processData(StoreEntity storeEntity, BufferedReader bufferedReader) {
+    var currentLine = new AtomicLong(0);
+
     return bufferedReader.lines()
       .skip(1)
+      .peek(item -> currentLine.incrementAndGet())
       .filter(StringUtils::hasText)
       .peek(lineEntryValidator::validate)
       .map(saleItemConverter::convert)
       .peek(item -> item.setId(uuidGenerator.uuid()))
       .peek(item -> item.setStoreEntity(storeEntity))
       .map(salePersistenceService::save)
+      .peek(item -> log.info("Current line : {}, item saved Id: {}", currentLine.get(), item.getId()))
       .count();
   }
 }
