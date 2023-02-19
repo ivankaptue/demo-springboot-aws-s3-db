@@ -4,7 +4,7 @@ services:
     image: flyway/flyway
     command: -url=jdbc:postgresql://postgres:5432/store_sales_db -schemas=app -user=root -password=root -connectRetries=10 -baselineOnMigrate="false" migrate
     volumes:
-      - ./src/main/resources/db/migration:/flyway/sql
+      - ./migrations:/flyway/sql
     depends_on:
       - flyway-clean
 
@@ -12,7 +12,7 @@ services:
     image: flyway/flyway
     command: -url=jdbc:postgresql://postgres:5432/store_sales_db -schemas=app -user=root -password=root -connectRetries=10 -cleanDisabled="false" clean
     volumes:
-      - ./src/main/resources/db/migration:/flyway/sql
+      - ./migrations:/flyway/sql
     depends_on:
       - postgres
 
