@@ -1,5 +1,6 @@
 package com.klid.s3db.model.dto;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 public record Sale(
@@ -7,5 +8,5 @@ public record Sale(
   String product,
   int quantity,
   BigDecimal price
-) {
+) implements Serializable {
 }

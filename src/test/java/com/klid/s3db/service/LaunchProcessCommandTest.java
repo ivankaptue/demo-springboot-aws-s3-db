@@ -1,6 +1,6 @@
 package com.klid.s3db.service;
 
-import com.klid.s3db.exception.S3DBException;
+import com.klid.s3db.exception.StorageServiceException;
 import com.klid.s3db.model.enums.StatusEnum;
 import com.klid.s3db.service.converter.SaleItemConverter;
 import com.klid.s3db.service.persistence.SalePersistenceService;
@@ -92,7 +92,7 @@ class LaunchProcessCommandTest {
     });
 
     assertThatThrownBy(() -> launchProcessCommand.execute(FILE_NAME))
-      .isInstanceOf(S3DBException.class)
+      .isInstanceOf(StorageServiceException.class)
       .hasMessage(String.format("An error occur on processing file %s", FILE_NAME));
 
     then(storePersistenceService).shouldHaveNoInteractions();

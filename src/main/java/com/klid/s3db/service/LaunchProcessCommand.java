@@ -1,6 +1,6 @@
 package com.klid.s3db.service;
 
-import com.klid.s3db.exception.S3DBException;
+import com.klid.s3db.exception.StorageServiceException;
 import com.klid.s3db.model.enums.StatusEnum;
 import com.klid.s3db.service.converter.SaleItemConverter;
 import com.klid.s3db.service.persistence.SalePersistenceService;
@@ -12,6 +12,7 @@ import com.klid.s3db.utils.ReaderProvider;
 import com.klid.s3db.utils.UUIDGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -48,7 +49,7 @@ public class LaunchProcessCommand {
       return count;
     } catch (IOException ex) {
       var message = String.format("An error occur on processing file %s", filename);
-      throw new S3DBException(message, ex);
+      throw new StorageServiceException(message, ex, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
