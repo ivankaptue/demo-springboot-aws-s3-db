@@ -46,7 +46,7 @@ public class S3StorageService implements StorageService {
 
       return objectResponse;
     } catch (NoSuchKeyException ex) {
-      throw new StorageServiceException("Key does not exist", ex, HttpStatus.NOT_FOUND);
+      throw new StorageServiceException(String.format("Key %s does not exist", key), ex, HttpStatus.NOT_FOUND);
     } catch (SdkClientException ex) {
       throw new StorageServiceException("Client Error when calling S3 Service", ex, HttpStatus.BAD_REQUEST);
     } catch (S3Exception ex) {

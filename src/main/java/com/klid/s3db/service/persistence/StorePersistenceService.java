@@ -1,5 +1,6 @@
 package com.klid.s3db.service.persistence;
 
+import com.klid.s3db.exception.DatabaseException;
 import com.klid.s3db.service.persistence.entity.StoreEntity;
 import com.klid.s3db.service.persistence.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;

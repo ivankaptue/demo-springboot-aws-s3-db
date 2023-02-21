@@ -1,4 +1,4 @@
-package com.klid.s3db.service.persistence;
+package com.klid.s3db.exception;
 
 import java.io.Serializable;
 

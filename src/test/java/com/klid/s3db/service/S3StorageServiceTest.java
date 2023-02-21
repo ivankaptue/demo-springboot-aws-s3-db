@@ -70,7 +70,7 @@ class S3StorageServiceTest {
       assertGetFileContentException(
         fileName,
         NoSuchKeyException.class,
-        "Key does not exist",
+        String.format("Key %s does not exist", fileName),
         HttpStatus.NOT_FOUND
       );
     }
