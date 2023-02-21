@@ -16,3 +16,20 @@ Once the data is saved, it is exposed via a Rest API to the various consumers
 - `make start-db` to start postgresql in docker container and apply flyway migrations
 - `mvn clean install` to build
 - `mvn spring-boot:run` to run
+
+###### Stack
+
+- Java17
+- Springboot 3+
+- AWS S3 - Storage service to get file from
+- PostgreSQL - RDBMS to store sales
+- Flyway - Used for migration
+- Docker-compose - Used for local setup
+
+###### Challenges
+
+- [x] 100% Jacoco test coverage
+- [x] 100% Mutation coverage (Pitest)
+- [ ] Cucumber and Testcontainers for automated acceptance tests
+- [x] CI pipeline using GitHub Actions
+- [ ] Cypress for e2e API Testing
