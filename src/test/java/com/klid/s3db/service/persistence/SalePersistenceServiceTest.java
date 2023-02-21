@@ -68,7 +68,9 @@ class SalePersistenceServiceTest {
     assertThatThrownBy(() -> salePersistenceService.save(saleEntity))
       .isInstanceOf(DatabaseException.class)
       .hasMessage("An error occur when saving SaleEntity")
-      .hasCause(exception);
+      .hasCause(exception)
+      .extracting("entity")
+      .isNotNull();
 
     then(saleRepository).should(times(2)).save(saleEntity);
     then(dbRetryService).should(times(2)).shouldRetry(exception);
