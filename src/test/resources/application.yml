@@ -10,3 +10,9 @@ app:
       secret: Secret
       max-attempts: 2
       timeout-millis: 500
+spring:
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: 'create'
