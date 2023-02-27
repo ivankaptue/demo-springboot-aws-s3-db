@@ -25,5 +25,6 @@ spring:
     driver-class-name: ${DATASOURCE_DRIVER}
   jpa:
     show-sql: true
+    generate-ddl: false
     hibernate:
       ddl-auto: none
