@@ -1,0 +1,10 @@
+name: Trigger CI build every day at 5AM
+
+on:
+  schedule:
+    # Runs "At 05:00 every day" (see https://crontab.guru)
+    - cron: '0 5 * * *'
+
+jobs:
+  call-ci-build:
+    uses: ivankaptue/demo-springboot-aws-s3-db/.github/workflows/ci.yml@main
