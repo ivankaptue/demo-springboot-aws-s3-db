@@ -30,6 +30,7 @@ Once the data is saved, it is exposed via a Rest API to the various consumers
 
 - [x] 100% Jacoco test coverage
 - [x] 100% Mutation coverage (Pitest)
-- [ ] Cucumber and Testcontainers for automated acceptance tests
+- [x] Cucumber and Testcontainers for automated acceptance tests
 - [x] CI pipeline using GitHub Actions
+- [ ] Cron job for daily build
 - [ ] Cypress for e2e API Testing
