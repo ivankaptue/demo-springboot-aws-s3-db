@@ -6,8 +6,6 @@ import io.cucumber.java.Before;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import static org.mockito.Mockito.reset;
-
 @Slf4j
 @RequiredArgsConstructor
 public class AcceptanceHooks {
@@ -21,9 +19,6 @@ public class AcceptanceHooks {
   }
 
   private void resetRepositories() {
-    reset(storeRepository);
-    reset(saleRepository);
-
     saleRepository.deleteAll();
     storeRepository.deleteAll();
     saleRepository.flush();

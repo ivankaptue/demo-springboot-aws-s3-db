@@ -5,6 +5,7 @@ import com.klid.s3db.service.persistence.entity.StoreEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
 
@@ -15,4 +16,5 @@ public class TestContext {
   private String filename;
   private StoreEntity savedStore;
   private List<SaleEntity> sales;
+  private ResultActions resultActions;
 }

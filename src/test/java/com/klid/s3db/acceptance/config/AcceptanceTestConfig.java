@@ -3,11 +3,8 @@ package com.klid.s3db.acceptance.config;
 import com.klid.s3db.acceptance.context.TestContext;
 import com.klid.s3db.acceptance.drivers.FileReaderDriver;
 import com.klid.s3db.model.Constants;
-import com.klid.s3db.service.persistence.repository.SaleRepository;
-import com.klid.s3db.service.persistence.repository.StoreRepository;
 import io.cucumber.spring.ScenarioScope;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
@@ -19,12 +16,6 @@ import static org.mockito.Mockito.mock;
 @TestConfiguration
 @Profile(Constants.PROFILE_INTEGRATION_TEST)
 public class AcceptanceTestConfig {
-
-  @SpyBean
-  StoreRepository storeRepository;
-
-  @SpyBean
-  SaleRepository saleRepository;
 
   @Bean
   S3Client s3Client() {
