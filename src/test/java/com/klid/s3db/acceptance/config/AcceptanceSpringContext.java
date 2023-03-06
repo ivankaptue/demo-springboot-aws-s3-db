@@ -20,6 +20,6 @@ import java.lang.annotation.Target;
   webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @AutoConfigureMockMvc
-@ActiveProfiles({Constants.PROFILE_INTEGRATION_TEST})
+@ActiveProfiles({Constants.ACCEPTANCE_TESTS_PROFILE})
 public @interface AcceptanceSpringContext {
 }

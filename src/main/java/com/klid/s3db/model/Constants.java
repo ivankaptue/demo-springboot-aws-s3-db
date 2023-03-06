@@ -5,5 +5,5 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Constants {
-  public static final String PROFILE_INTEGRATION_TEST = "integration-test";
+  public static final String ACCEPTANCE_TESTS_PROFILE = "acceptance-test";
 }

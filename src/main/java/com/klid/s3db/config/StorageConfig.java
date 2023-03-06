@@ -17,7 +17,7 @@ import java.time.Duration;
 /**
  * @author Ivan Kaptue
  */
-@Profile("!" + Constants.PROFILE_INTEGRATION_TEST)
+@Profile("!" + Constants.ACCEPTANCE_TESTS_PROFILE)
 @Configuration
 public class StorageConfig {
 

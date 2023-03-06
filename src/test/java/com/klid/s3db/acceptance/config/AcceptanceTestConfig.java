@@ -14,7 +14,7 @@ import static org.mockito.Mockito.mock;
 
 @Lazy
 @TestConfiguration
-@Profile(Constants.PROFILE_INTEGRATION_TEST)
+@Profile(Constants.ACCEPTANCE_TESTS_PROFILE)
 public class AcceptanceTestConfig {
 
   @Bean
