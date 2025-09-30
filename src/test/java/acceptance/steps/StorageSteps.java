@@ -1,7 +1,7 @@
-package com.klid.s3db.acceptance.steps;
+package acceptance.steps;
 
-import com.klid.s3db.acceptance.context.TestContext;
-import com.klid.s3db.acceptance.drivers.FileReaderDriver;
+import acceptance.context.TestContext;
+import acceptance.drivers.FileReaderDriver;
 import io.cucumber.java.en.Given;
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.core.ResponseInputStream;

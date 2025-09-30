@@ -1,6 +1,6 @@
-package com.klid.s3db.acceptance.steps;
+package acceptance.steps;
 
-import com.klid.s3db.acceptance.context.TestContext;
+import acceptance.context.TestContext;
 import io.cucumber.java.en.When;
 import lombok.RequiredArgsConstructor;
 import org.springframework.test.web.servlet.MockMvc;

@@ -1,4 +1,4 @@
-package com.klid.s3db.acceptance.hooks;
+package acceptance.hooks;
 
 import com.klid.s3db.service.persistence.repository.SaleRepository;
 import com.klid.s3db.service.persistence.repository.StoreRepository;

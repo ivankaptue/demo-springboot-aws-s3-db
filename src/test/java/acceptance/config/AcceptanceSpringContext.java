@@ -1,4 +1,4 @@
-package com.klid.s3db.acceptance.config;
+package acceptance.config;
 
 import com.klid.s3db.Application;
 import com.klid.s3db.model.Constants;

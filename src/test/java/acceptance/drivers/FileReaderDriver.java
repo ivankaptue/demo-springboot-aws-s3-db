@@ -1,4 +1,4 @@
-package com.klid.s3db.acceptance.drivers;
+package acceptance.drivers;
 
 import lombok.SneakyThrows;
 

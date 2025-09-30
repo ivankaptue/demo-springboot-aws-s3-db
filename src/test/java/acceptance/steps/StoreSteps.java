@@ -1,6 +1,6 @@
-package com.klid.s3db.acceptance.steps;
+package acceptance.steps;
 
-import com.klid.s3db.acceptance.context.TestContext;
+import acceptance.context.TestContext;
 import com.klid.s3db.model.enums.StatusEnum;
 import com.klid.s3db.service.persistence.repository.StoreRepository;
 import io.cucumber.java.en.Then;

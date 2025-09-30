@@ -1,6 +1,6 @@
-package com.klid.s3db.acceptance.steps;
+package acceptance.steps;
 
-import com.klid.s3db.acceptance.context.TestContext;
+import acceptance.context.TestContext;
 import com.klid.s3db.service.persistence.entity.SaleEntity;
 import com.klid.s3db.service.persistence.repository.SaleRepository;
 import io.cucumber.datatable.DataTable;

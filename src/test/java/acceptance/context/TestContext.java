@@ -1,4 +1,4 @@
-package com.klid.s3db.acceptance.context;
+package acceptance.context;
 
 import com.klid.s3db.service.persistence.entity.SaleEntity;
 import com.klid.s3db.service.persistence.entity.StoreEntity;

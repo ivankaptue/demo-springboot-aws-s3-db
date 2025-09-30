@@ -1,7 +1,7 @@
-package com.klid.s3db.acceptance.config;
+package acceptance.config;
 
-import com.klid.s3db.acceptance.context.TestContext;
-import com.klid.s3db.acceptance.drivers.FileReaderDriver;
+import acceptance.context.TestContext;
+import acceptance.drivers.FileReaderDriver;
 import com.klid.s3db.model.Constants;
 import io.cucumber.spring.ScenarioScope;
 import org.springframework.boot.test.context.TestConfiguration;

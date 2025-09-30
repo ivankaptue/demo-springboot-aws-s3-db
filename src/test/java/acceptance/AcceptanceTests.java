@@ -1,6 +1,6 @@
-package com.klid.s3db.acceptance;
+package acceptance;
 
-import com.klid.s3db.acceptance.config.AcceptanceSpringContext;
+import acceptance.config.AcceptanceSpringContext;
 import com.klid.s3db.integration.BaseIntegrationTestConfig;
 import org.junit.platform.suite.api.ConfigurationParameter;
 import org.junit.platform.suite.api.IncludeEngines;
@@ -14,7 +14,7 @@ import static io.cucumber.junit.platform.engine.Constants.PLUGIN_PROPERTY_NAME;
 @IncludeEngines("cucumber")
 @SelectClasspathResource("features")
 @ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "pretty, html:target/cucumber-reports/cucumber.html, junit:target/cucumber-reports/cucumber.xml")
-@ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "com.klid.s3db.acceptance")
+@ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "acceptance")
 @AcceptanceSpringContext
 public class AcceptanceTests extends BaseIntegrationTestConfig {
 }
